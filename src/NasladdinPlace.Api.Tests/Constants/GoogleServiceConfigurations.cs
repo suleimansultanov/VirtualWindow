@@ -1,0 +1,11 @@
+﻿namespace NasladdinPlace.Api.Tests.Constants
+{
+    public static class GoogleServiceConfigurations
+    {
+        public const string PrivateKey =
+            "-----BEGIN PRIVATE KEY-----MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDfyp/ENPnulCbZkZi8pd9m7d9LRkSY64d2dbvzM82ZC6nkZnCpMhci1rJKP1MwpSxpMZps5Qhd1OU4uvl7edSmJrDKRGJCma5qOJeVUMJFHqqmRgkteumYRmCxYn+djKOSrUHuiHPE1bAZcvryv6GKEuCNOZEirZGyzQqb5Nn0sLO9shXg6mMM3mqp8do5PdTjS//VQ3p+o17UxiLqAXLm6Bwa66ITJTpkTGT2OZHXEkcDhBF8ooljSjVvgoYv5umjYpoJQY202b60IZ95kfNMitDKk/FvILbap156WrsXntEsSj66NNAV9Xgswq9cGQWBNeiF0Cc0jzHn8aYPT17pAgMBAAECggEAG9EBvs+e6Uq88Xopc/liJVcX1DFtwVw1QEIuFHKx8X4DpgIdqsoxGgF5s8TfQEKnnIOv4C0vtwoJW93RuMlR5z0T6HBLjl+v0EAsh0C8hP7k0zoNVfvbITROPH4zwo+CnW6vrUiEq0isVN1318h9+b2S77riEV9lpsXZtbriZIl+pl7JwtJtkfMZxYL6D6M55J25JokfbJg5huivPAMSIE+elzulkZ5NCpULfjOU5I/Ittv3n7ndTYdRtFsK5ijJxdZKzrWrAQRoe+d6vPw/lx3wgo5VDI/PjnOIQWzRp8tPBQjti9P5ELfCtzwnOGpppKryO6OERVBIDUXpRm4ByQKBgQD2p2RuBsEtNkOaNTimIrDrj9WpRY17Yb6APfSYYLJDfpC13OaHh50qUuI4sJDSrZlo4U0ZbDrApHuk9/Omda4zJ+0nD0E4S8U+Z3jtPfm/c9J7457aed1w9Zpu/LSO+xIbm7EU1WwUo4ZwtC8I7/XordJvB7Yg3NV1A//mNvUOgwKBgQDoRXXwtgO81aQP+yRxqibKSBkSW5jlmnw3LRfefGo1JYlm6CfF99TJFE2ipdpt02e7Svwfm7QePpE+dEQqS8x7cZa9rV5e4TXkSeUDzSGEoe1UEcvu9JtztM7goJ/aYikPz5Qd/aBKKhBj9ZBeD5D6SRf1vAUI5MALB9WjDDqhIwKBgQCy1oAM/rzGKVgu0XP3kaOxyKJkj1ecJCzaExHsAgB+y5/lHPvRPNUJwPrhm7QF7XUUBHfAfSbEUv6LiHSTNzRNRx++eGMTjGzBaIjXi14wIKx2w32Eb2PN6WZGHthT61sfxW1J68zn0gFCaoLH+iTUxmOTuYWmojfrFjFPHH3mPQKBgBe+4ivVr9QiUz9/AV7NcmHDtSx3SM5QWNqbNZF9Tq5YRA/NNCO9DnfwJ2+1XPtVXYl8RQJGPMfKxbaI1F8umJ0WI78Idllk1Mmd9FfLJN4WX9j0aNDpGOtfVLcKNM1ys5f2NMJMJ5LtcfeGJ1g2Zy/vQQ/SRQF/wVJfXqvomCXZAoGABxUOi7lgyWBQNxydD2a/YiJhh5sPmoxygkNEIgL6fnh8s8RSKF6yNAcgfHLHVvWt+7gtXP8d5EL+T0K8Nxp8zEQlBX7CuJeacZvEqCzqDJq1w4FqPGlta76JnZVr2napzQNh6VTj6C+7jdNTrXLCNfoHaAA/ChFOIJ2pg8fF7aA=-----END PRIVATE KEY-----";
+        public const string ClientEmail = "support@nasladdinspreadsheetsproject.iam.gserviceaccount.com";
+        public const string ClientId = "112669338008752956074";
+        public const string Type = "service_account";
+    }
+}

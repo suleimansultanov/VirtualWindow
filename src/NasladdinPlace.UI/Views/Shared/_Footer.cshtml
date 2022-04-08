@@ -1,0 +1,8 @@
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
+<div class="footer">
+    <div>
+        <strong>@Localizer["Copyright"].Value</strong> Nasladdin.Club &copy; 2017 - @DateTime.Now.Year
+    </div>
+</div>

@@ -1,0 +1,67 @@
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
+@model NasladdinPlace.UI.ViewModels.LoginViewModel
+
+@{
+    ViewData["Title"] = Localizer["Login Page"].Value;
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Nasladdin</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="apple-touch-icon" sizes="180x180" href="~/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="~/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="~/icons/favicon-16x16.png">
+    <environment names="Development">
+        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+        <link rel="stylesheet" href="~/lib/font-awesome/css/font-awesome.css" />
+        <link rel="stylesheet" href="~/css/animate.css" />
+        <link rel="stylesheet" href="~/css/style.css" asp-append-version="true" />
+    </environment>
+    <environment names="Staging,Production">
+        <link rel="stylesheet" href="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/css/bootstrap.min.css" 
+              asp-fallback-href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+              asp-fallback-href="~/lib/font-awesome/css/font-awesome.min.css" />
+        <link rel="stylesheet" href="~/css/animate.css" />
+        <link rel="stylesheet" href="~/css/style.css" asp-append-version="true" />
+    </environment>
+
+</head>
+<body class="gray-bg">
+<div class="middle-box text-center loginscreen  animated fadeInDown">
+    <div>
+        <div class="hidden-md p-h-lg">
+            <h2 class="font-bold">@Localizer["Admin panel of POS"].Value</h2>
+            <img class="p-sm hidden-xs" src="~/images/logo.svg" alt="logo_image"/>
+        </div>
+    
+        <form asp-controller="Account" asp-action="Login" class="m-t">
+            <h2 class="text-center">@ViewData["Title"]</h2>
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+            <input asp-for="RedirectUrl" class="hidden"/>
+            <div class="input-group m-b">
+                <span class="input-group-addon"><em class="fa fa-user"></em></span> 
+                <input id="username" asp-for="UserName" class="form-control" placeholder="@Localizer["User Name"].Value"/>
+                <span asp-validation-for="UserName" class="text-danger"></span>
+            </div>
+            <div class="input-group m-b">
+                <span class="input-group-addon"><em class="fa fa-unlock-alt"></em></span> 
+                <input asp-for="Password" class="form-control" placeholder="@Localizer["Password"].Value"/>
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="@Localizer["Login"].Value" class="btn btn-block btn-primary"/>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="clearfix"></div>
+</body>
+</html>

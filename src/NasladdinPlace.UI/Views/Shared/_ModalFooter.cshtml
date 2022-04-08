@@ -1,0 +1,12 @@
+﻿@using NasladdinPlace.UI.ViewModels.Shared.ModalWindow
+@model ModalWindowFooter
+
+<div class="modal-footer">
+    <button data-dismiss="modal" id="@Model.CancelButtonId" class="btn btn-default" type="button">@Model.CancelButtonText</button>
+    @if (!Model.OnlyCancelButton)
+    {
+        <button class="btn @(Model.SubmitButtonClass)" id="@Model.SubmitButtonId" @(Model.ButtonAttribute) type="submit">
+            @Model.SubmitButtonText
+        </button>
+    }
+</div>

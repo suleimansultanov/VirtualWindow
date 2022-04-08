@@ -1,0 +1,6 @@
+﻿@model NasladdinPlace.UI.Managers.Reference.Models.FormRendererItemInfo
+
+@{
+    var info = Model;
+}
+@await Html.PartialAsync("Renderer/_renderSort", info.RenderInfo)

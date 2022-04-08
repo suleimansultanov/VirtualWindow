@@ -1,0 +1,300 @@
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@using NasladdinPlace.Core.Enums.Discounts
+@using NasladdinPlace.UI.Helpers
+@using NasladdinPlace.UI.Managers.Reference.Enums
+@using NasladdinPlace.UI.ViewModels.Base
+@using NasladdinPlace.UI.ViewModels.Discounts
+@using NasladdinPlace.UI.ViewModels.PointsOfSale
+@model UniReferenceViewModel<BaseViewModel>
+@inject IViewLocalizer Localizer
+
+@{
+    var saveButton = Localizer["Save"].Value;
+    var cancel = Localizer["Cancel"].Value;
+    var removeRuleButton = Localizer["Remove Rule"].Value;
+
+    var discountFormRenderer = new FormRendererHelper<DiscountInfoViewModel>();
+    var discountNameControl = discountFormRenderer.Get(f => f.Name);
+    var discountEnableControl = discountFormRenderer.Get(f => f.IsEnabled);
+    var discountPercentsControl = discountFormRenderer.Get(f => f.DiscountInPercents);
+    var discountAreaControl = discountFormRenderer.Get(f => f.DiscountArea);
+
+    var discountRuleFormRenderer = new FormRendererHelper<DiscountRuleViewModel>();
+    var ruleAreaControl = discountRuleFormRenderer.Get(f => f.DiscountRuleArea);
+    var ruleTypeControl = discountRuleFormRenderer.Get(f => f.DiscountRuleType);
+
+    var discountRuleValueFormRenderer = new FormRendererHelper<DiscountRuleValueViewModel>();
+    var timeFromControl = discountRuleValueFormRenderer.Get(f => f.TimeFrom);
+    var timeToControl = discountRuleValueFormRenderer.Get(f => f.TimeTo);
+    var expirationDateControl = discountRuleValueFormRenderer.Get(f => f.HoursBeforeExpirationDate);
+
+    var ruleInfoViewModel = new DiscountRuleViewModel
+    {
+        RuleValue = new DiscountRuleValueViewModel()
+    };
+    var discountInfoViewModel = new DiscountInfoViewModel
+    {
+        Rules = new List<DiscountRuleViewModel> { ruleInfoViewModel },
+        PointsOfSale = new List<PosBasicInfoViewModel>()
+    };
+}
+
+<div class="modal" id="reference-details-modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content animated fadeIn">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4>@Localizer["DiscountsTitle"].Value</h4>
+            </div>
+            <div class="modal-body" data-bind="with: DiscountInfo">
+                <div class="form-group row">
+                    <label class="col-lg-12">@Html.RenderDisplay(discountNameControl)</label>
+                    <div class="col-lg-12">@(await Html.RenderControlAsync(discountNameControl))</div>
+                </div>
+                
+                <div class="form-group row">
+                    <label class="col-lg-12">@Html.RenderDisplay(discountAreaControl)</label>
+                    <div class="col-lg-12">@(await Html.RenderControlAsync(discountAreaControl))</div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="col-lg-12">@Html.RenderDisplay(discountPercentsControl)</label>
+                    <div class="col-lg-12">@(await Html.RenderControlAsync(discountPercentsControl))</div>
+                </div>
+                
+                <div class="form-group row">
+                    <label class="col-lg-12">@Html.RenderDisplay(discountEnableControl)</label>
+                    <div class="col-lg-12">@(await Html.RenderControlAsync(discountEnableControl))</div>
+                </div>
+
+                <div class="panel panel-default">
+                    <div class="panel-heading">@Localizer["RulesTitle"].Value</div>
+                    <div class="panel-body">
+                        <!-- ko foreach: Rules -->
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="form-group row">
+                                    <label class="col-lg-12">@Html.RenderDisplay(ruleAreaControl)</label>
+                                    <div class="col-lg-12">@(await Html.RenderControlAsync(ruleAreaControl))</div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <label class="col-lg-12">@Html.RenderDisplay(ruleTypeControl)</label>
+                                    <div class="col-lg-12">@(await Html.RenderControlAsync(ruleTypeControl))</div>
+                                </div>
+
+                                <div data-bind="visible: DiscountRuleType() === @((int)DiscountRuleType.PurchaseStartDate)">
+                                    <div data-bind="with: RuleValue">
+                                        <div class="row">
+                                            <div class="col-lg-6">
+                                                <div class="form-group row">
+                                                    <label class="col-lg-12">@Html.RenderDisplay(timeFromControl)</label>
+                                                    <div class="col-lg-12">@(await Html.RenderControlAsync(timeFromControl))</div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-lg-6">
+                                                <div class="form-group row">
+                                                    <label class="col-lg-12">@Html.RenderDisplay(timeToControl)</label>
+                                                    <div class="col-lg-12">@(await Html.RenderControlAsync(timeToControl))</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div data-bind="visible: DiscountRuleType() === @((int)DiscountRuleType.ExpirationDate)">
+                                    <div data-bind="with: RuleValue">
+                                        <div class="form-group row">
+                                            <label class="col-lg-12">@Html.RenderDisplay(expirationDateControl)</label>
+                                            <div class="col-lg-12">@(await Html.RenderControlAsync(expirationDateControl))</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <button type="button" class="btn btn-outline btn-default btn-sm" style="float: right" data-bind="click: $root.removeRule">@removeRuleButton</button>
+                            </div>
+                        </div>
+                        <hr style="margin-top: 5px" />
+                        <!-- /ko -->
+                        <button type="button" class="btn btn-outline btn-success btn-sm" style="float: right" data-bind="click: $root.addRule">@Localizer["Add Rule"].Value</button>
+                    </div>
+
+                    <div class="panel-footer">
+                        <span class="text-success" data-bind="text: $root.CalculatedRule"></span>
+                    </div>
+                </div>
+
+                <div class="panel panel-default">
+                    <div class="panel-heading">@Localizer["PosesTitle"].Value</div>
+                    <div class="panel-body">
+                        <!-- ko foreach: PointsOfSale -->
+                        <span class="badge">
+                            <span data-bind="text: Name"></span>
+                            <em class="fa fa-times custom-close" data-bind="click: $root.removePos"></em>
+                        </span>
+                        <!-- /ko -->
+
+                        <hr style="margin-top: 5px" />
+                        <div style="float: right">
+                            <button type="button" class="btn btn-outline btn-success btn-sm" data-bind="click: $root.addPos">@Localizer["Add Pos"].Value</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-white" data-dismiss="modal">@cancel</button>
+                <button type="button" class="btn btn-primary" data-bind="click: saveDiscount">@saveButton</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    window.getGridCustomHandler = function () {
+        return new GridCustomHandler(
+            vm => {
+                const modalId = "#reference-details-modal";
+
+                vm.DiscountInfo = ko.observable(ko.mapping.fromJS(@Html.Serialize(discountInfoViewModel)));
+
+                vm.CalculatedRule = ko.computed(function() {
+                    var rules = [];
+
+                    vm.DiscountInfo().Rules.forEach(function (rule) {
+                        const areaSelected = vm.References['@(typeof(DiscountRuleArea).FullName)'].Data()[rule.DiscountRuleArea()];
+                        const typeSelected = vm.References['@(typeof(DiscountRuleType).FullName)'].Data()[rule.DiscountRuleType()];
+
+                        const baseRuleText = areaSelected.Text() + "." + typeSelected.Text();
+
+                        if (rule.DiscountRuleType() === @((int)DiscountRuleType.PurchaseStartDate)) {
+                            const minRuleText = baseRuleText + " > " + rule.RuleValue.TimeFrom();
+                            const maxRuleText = baseRuleText + " < " + rule.RuleValue.TimeTo();
+
+                            rules.push(formatRule(minRuleText));
+                            rules.push(formatRule(maxRuleText));
+                        }
+
+                        if (rule.DiscountRuleType() === @((int)DiscountRuleType.ExpirationDate)) {
+                            const ruleExpirationText = baseRuleText + " < " + rule.RuleValue.HoursBeforeExpirationDate();
+                            
+                            rules.push(formatRule(ruleExpirationText));                            
+                        }
+                    });
+
+                    return rules.join(' и ');
+                }, this);
+
+                vm.addRule = function () {
+                    var newRule = ko.mapping.fromJS(@Html.Serialize(ruleInfoViewModel));
+                    vm.DiscountInfo().Rules.push(newRule);
+                }
+
+                vm.removeRule = function(rule) {
+                    vm.DiscountInfo().Rules.remove(rule);
+                };
+
+                vm.addPos = function() {
+                    var callback = function (data) {
+                        var posInfo = ko.mapping.fromJS(@Html.Serialize(new PosBasicInfoViewModel()));
+
+                        var found = false;
+                        for (var i = 0; i < vm.DiscountInfo().PointsOfSale().length; i++) {
+                            if (vm.DiscountInfo().PointsOfSale()[i].PosId() === data[2]) {
+                                found = true;
+                                break;
+                            }
+                        }
+                        if (found)
+                            return;
+
+                        posInfo.PosId(data[2]);
+                        posInfo.Name(data[0]);
+                        vm.DiscountInfo().PointsOfSale.push(posInfo);                        
+                    };
+
+                    showTextReference('@TextReferenceSources.PointOfSales',
+                        'Витрины',
+                        'simplePage',
+                        false,
+                        callback,
+                        null,
+                        '');
+                }
+
+                vm.removePos = function(posInfo) {
+                    vm.DiscountInfo().PointsOfSale.remove(posInfo);
+                }
+
+                vm.add = function() {
+                    $(modalId).modal();
+                }
+
+                vm.edit = function(item) {
+                    const url = '/api/discounts/' + item.DiscountId();
+
+                    vm.serviceProxy.getJsonResult(url,
+                        {},
+                        function(data) {
+                            if (data.error) {
+                                bootstrapError(result.error);
+                            } else {
+                                vm.DiscountInfo(ko.mapping.fromJS(data.result));
+
+                                $(modalId).modal();
+                            }
+                        });
+                }
+
+                vm.saveDiscount = function() {
+                    bootstrapConfirmSave(
+                        '@Html.Raw(Localizer["Attention"].Value)',
+                        '@Html.Raw(Localizer["Confirming modified message"].Value)',
+                        function () {
+                            var data = ko.mapping.toJSON(vm.DiscountInfo);
+                            const url = '/api/discounts';
+
+                            if (vm.DiscountInfo().DiscountId() > 0) {
+                                vm.serviceProxy.putJsonResult(url,
+                                    data,
+                                    function(result) {
+                                        if (result.error) {
+                                            bootstrapError(result.error);
+                                        } else {
+                                            bootstrapSuccess('@Html.Raw(Localizer["Editing"].Value)',
+                                                '@Html.Raw(Localizer["Discount information successfully updated"].Value)');
+                                            clearNewItem();
+                                            $(modalId).modal('hide');
+                                            vm.refresh();
+                                        }
+                                    });
+                            } else {
+                                vm.serviceProxy.postJsonResult(url,
+                                    data,
+                                    function(result) {
+                                        if (result.error) {
+                                            bootstrapError(result.error);
+                                        } else {
+                                            bootstrapSuccess('@Html.Raw(Localizer["Saving"].Value)',
+                                                '@Html.Raw(Localizer["Discount information successfully saved"].Value)');
+                                            clearNewItem();
+                                            $(modalId).modal('hide');
+                                            vm.refresh();
+                                        }
+                                    });
+                            }
+                        });
+                }
+
+                function clearNewItem() {
+                    vm.DiscountInfo(ko.mapping.fromJS(@Html.Serialize(discountInfoViewModel)));
+                }
+
+                function formatRule(rule) {
+                    return '(' + rule + ')';
+                }
+            });
+    };
+</script>

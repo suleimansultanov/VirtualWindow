@@ -1,0 +1,242 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <PreserveCompilationContext>true</PreserveCompilationContext>
+    <AssemblyName>NasladdinPlace.UI</AssemblyName>
+    <UserSecretsId>ef42209e-85eb-4101-b5e8-cc0043d963dc</UserSecretsId>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <Optimize>True</Optimize>
+    <CodeAnalysisRuleSet>NasladdinPlace.UI.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <Optimize>False</Optimize>
+    <CodeAnalysisRuleSet>NasladdinPlace.UI.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Update="wwwroot\**\*">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.1.15" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.10" />
+    <PackageReference Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
+    <PackageReference Include="Microsoft.Azure.KeyVault" Version="3.0.5" />
+    <PackageReference Include="Microsoft.Azure.KeyVault.WebKey" Version="3.0.5" />
+    <PackageReference Include="AutoMapper" Version="8.1.1" />
+    <PackageReference Include="Refit" Version="5.0.23" />
+    <PackageReference Include="Telegram.Bot" Version="15.3.0" />
+  </ItemGroup>
+  <Target Name="PrepublishScript" BeforeTargets="PrepareForPublish">
+    <Exec Command="bower install" />
+    <Exec Command="dotnet bundle" />
+  </Target>
+  <ItemGroup>
+    <DotNetCliToolReference Include="BundlerMinifier.Core" Version="2.2.301" />
+    <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.4" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CloudPaymentsClient\CloudPaymentsClient.csproj" />
+    <ProjectReference Include="..\FirebaseCloudMessagingClient\FirebaseCloudMessagingClient.csproj" />
+    <ProjectReference Include="..\NasladdinPlace.Api.Client\NasladdinPlace.Api.Client.csproj" />
+    <ProjectReference Include="..\NasladdinPlace.Core\NasladdinPlace.Core.csproj" />
+    <ProjectReference Include="..\NasladdinPlace.DAL\NasladdinPlace.DAL.csproj" />
+    <ProjectReference Include="..\NasladdinPlace.Dtos\NasladdinPlace.Dtos.csproj" />
+    <ProjectReference Include="..\NasladdinPlace.GoogleSpreadsheets\NasladdinPlace.Spreadsheets.csproj" />
+    <ProjectReference Include="..\NasladdinPlace.TelegramBot\NasladdinPlace.TelegramBot.csproj" />
+    <ProjectReference Include="..\NasladdinPlace.Utilities\NasladdinPlace.Utilities.csproj" />
+    <ProjectReference Include="..\NasladdinPlace.Infra.IoC\NasladdinPlace.Infra.IoC.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Resources\DataAnnotationMessagesLocalization.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>DataAnnotationMessagesLocalization.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\ModelBindingMessagesLocalization.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ModelBindingMessagesLocalization.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\ViewModels\Goods\GoodsFormViewModel.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>GoodsFormViewModel.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\ViewModels\LabeledGoods\LabeledGoodFormViewModel.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>LabeledGoodFormViewModel.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\ViewModels\Pos\PosFormViewModel.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>PosFormViewModel.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\ViewModels\Users\UserEditViewModel.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>UserEditViewModel.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\GoodsMoving\AddItemForm.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AddItemForm.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\GoodsMoving\GetChecks.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>GetChecks.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\GoodsMoving\TransactionDetails.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>TransactionDetails.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\GoodsMoving\_bankTransactionsPartial.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>_bankTransactionsPartial.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\Plants\PlantPeriodicTaskForm.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>PlantPeriodicTaskForm.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\Shared\_Footer.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>_Footer.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\Shared\_LoginPartial.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>_LoginPartial.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\Shared\_Navigation.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>_Navigation.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\Users\_createUserPartial.ru.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>_createUserPartial.ru.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Resources\DataAnnotationMessagesLocalization.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>DataAnnotationMessagesLocalization.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\ModelBindingMessagesLocalization.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>ModelBindingMessagesLocalization.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\ModelBindingMessagesLocalization.ru.resx">
+      <Generator>
+      </Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\ViewModels\Goods\GoodsFormViewModel.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>GoodsFormViewModel.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\ViewModels\LabeledGoods\LabeledGoodFormViewModel.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <CustomToolNamespace>
+      </CustomToolNamespace>
+      <LastGenOutput>LabeledGoodFormViewModel.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\ViewModels\Pos\PosFormViewModel.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>PosFormViewModel.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\ViewModels\Users\UserEditViewModel.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>UserEditViewModel.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\ViewModels\Users\UserEditViewModel.ru.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\Account\Login.ru.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\AntennasConfiguration\ConfigureAntennas.ru.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\BuyGood\Index.ru.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\GoodImages\GetGoodImages.ru.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\GoodImages\GoodImageForm.ru.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\GoodsMoving\AddItemForm.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AddItemForm.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\GoodsMoving\TransactionDetails.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>TransactionDetails.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\GoodsMoving\_bankTransactionsPartial.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>_bankTransactionsPartial.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\Goods\GoodForm.ru.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\LabeledGoods\GetLabeledGoodsInsidePlant.ru.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\LabeledGoods\LabeledGoodForm.ru.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\Logs\GetLogs.ru.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\PlantContentReadingStatistics\GetPlantContentReadingStatistics.ru.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\Plants\PlantPeriodicTaskForm.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>PlantPeriodicTaskForm.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\Shared\_Footer.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>_Footer.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\Shared\_LoginPartial.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>_LoginPartial.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\Shared\_Navigation.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>_Navigation.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\GoodsMoving\GetChecks.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>GetChecks.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\Shared\_Layout.ru.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\Users\_createUserPartial.ru.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Update="Views\LabeledGoods\_afterGridLabeledGoodsGroupByGoodPartial.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\MediaContentToPlatforms\_beforeGridPartial.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="wwwroot\logs" />
+  </ItemGroup>
+</Project>

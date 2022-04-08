@@ -1,0 +1,97 @@
+﻿@using NasladdinPlace.UI.ViewModels.Base
+@using Microsoft.AspNetCore.Mvc.Localization
+@using NasladdinPlace.UI.Helpers
+@using NasladdinPlace.UI.ViewModels.PosScreenTemplates
+@model UniReferenceViewModel<BaseViewModel>
+
+@inject IViewLocalizer Localizer
+@{
+    var saveButton = Localizer["Save"].Value;
+    var cancel = Localizer["Cancel"].Value;
+
+    var formRenderer = new FormRendererHelper<PosScreenTemplateViewModel>();
+    var templateNameControl = formRenderer.Get(f => f.Name);
+}
+<div class="modal" id="add-template-modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content animated fadeIn">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4>@Localizer["AddTitle"].Value</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group row">
+                    <div class="col-lg-12">
+                        <div class="form-group row">
+                            <label class="col-lg-12">@Html.RenderDisplay(templateNameControl)</label>
+                            <div class="col-lg-12">@await Html.RenderControlAsync(templateNameControl)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-white" data-dismiss="modal">@cancel</button>
+                <button type="button" class="btn btn-primary" data-bind="click: saveTemplate">@saveButton</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    window.getGridCustomHandler = function () {
+        return new GridCustomHandler(
+            vm => {
+                const modalId = "#add-template-modal";
+
+                vm.Name = ko.observable();
+
+                vm.add = function () {
+                    $(modalId).modal();
+                }
+
+                vm.remove = function(item) {
+                    bootstrapConfirmDelete(
+                        '@Html.Raw(Localizer["Attention"].Value)',
+                        '@Html.Raw(Localizer["Confirming delete message"].Value)',
+                        function () {
+                            const url = '/api/PosScreenTemplates/' + item.Id();
+
+                            vm.serviceProxy.deleteJsonResult(url, null, function (result) {
+                                if (result.error) {
+                                    bootstrapError(result.error);
+                                } else {
+                                    bootstrapSuccess('@Html.Raw(Localizer["Removing"].Value)', '@Html.Raw(Localizer["Pos screen template successfully removed"].Value)');
+                                    vm.refresh();
+                                }
+                            });
+                        });
+                }
+
+                vm.edit = function (item) {
+                    const url = `/PosScreenTemplates/EditTemplateAsync/${item.Id()}`;
+                    $(location).attr('href', url);
+                },
+
+                vm.saveTemplate = function () {
+                    bootstrapConfirmSave('@Html.Raw(Localizer["Attention"].Value)',
+                        '@Html.Raw(Localizer["Confirmation message"].Value)', performSave);
+                }
+
+                function performSave() {
+                    const url = '/api/PosScreenTemplates';
+                    const data = {
+                        Name: vm.Name()
+                    };
+
+                    vm.serviceProxy.postJsonResult(url, data, function (result) {
+                        if (result.error) {
+                            bootstrapError(result.error);
+                        } else {
+                            bootstrapSuccess("@Localizer["Saving"].Value", '@Html.Raw(Localizer["Pos screen content successfully saved"].Value)');
+                            $(modalId).modal('toggle');
+                            vm.refresh();
+                        }
+                    });
+                }
+            });
+    };
+</script>

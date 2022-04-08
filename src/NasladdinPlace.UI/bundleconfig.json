@@ -1,0 +1,44 @@
+﻿[
+  {
+    "outputFileName": "wwwroot/css/style.min.css",
+    // An array of relative input file paths. Globbing patterns supported
+    "inputFiles": [
+      "wwwroot/css/style.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/common.min.js",
+    // An array of relative input file paths. Globbing patterns supported
+    "inputFiles": [
+      "wwwroot/js/common.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/site.min.js",
+    "inputFiles": [
+      "wwwroot/js/site.js",
+      "wwwroot/js/app/services/httpRequestsService.js",
+      "wwwroot/js/app/services/labeledGoodService.js",
+      "wwwroot/js/app/controllers/labeledGoodsController.js",
+      "wwwroot/js/app/services/plantService.js",
+      "wwwroot/js/app/controllers/plantsController.js",
+      "wwwroot/js/app/services/goodService.js",
+      "wwwroot/js/app/controllers/goodsController.js",
+      "wwwroot/js/app/services/goodImageService.js",
+      "wwwroot/js/app/controllers/goodImagesController.js",
+      "wwwroot/js/app/utils/mobileOperatingSystems.js",
+      "wwwroot/js/app/utils/mobileOperatingSystemDetector.js",
+      "wwwroot/js/app/controllers/mobileAppsStoreRedirectionController.js",
+      "wwwroot/js/app/services/userBalanceService.js",
+      "wwwroot/js/app/services/refundService.js",
+      "wwwroot/js/app/controllers/shoppingStatisticsController.js"
+    ],
+    // Optionally specify minification options
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    // Optinally generate .map file
+    "sourceMap": false
+  }
+]

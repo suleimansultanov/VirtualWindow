@@ -1,0 +1,307 @@
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@using NasladdinPlace.UI.ViewModels.PointsOfSale
+@inject IViewLocalizer Localizer
+
+@model NasladdinPlace.UI.ViewModels.PointsOfSale.PosBasicInfoViewModel
+
+@{
+    ViewData["Title"] = string.Format(Localizer["TemperatureStateTitleFormat"].Value, Model.Name);
+    var chartRenderDto = ViewBag.ChartRenderInfo as PosEquipmentStateChartRenderingViewModel;
+}
+<link href="~/css/views/labeledGoods/labeledGoodForm.css" rel="stylesheet" />
+<div class="row row-eq-height wrapper border-bottom white-bg p-sm">
+    <div class="col-xs-9 col-sm-10" style="font-size: 14px;">
+        <ol class="breadcrumb">
+            <li class="hidden-xs">
+                <a href="@Url.Action("All", "PointsOfSale")">@Localizer["Home"].Value</a>
+            </li>
+            <li class="hidden-xs">
+                <a asp-controller="PointsOfSale"
+                   asp-action="EditPos"
+                   asp-route-id="@Model.PosId">
+                    @Localizer["Interface"].Value
+                </a>
+            </li>
+            <li class="active">
+                <strong>@ViewData["Title"]</strong>
+            </li>
+        </ol>
+    </div>
+    <div class="col-xs-3 col-sm-2">
+    </div>
+</div>
+<div class="wrapper wrapper-content animated fadeIn">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-content">
+                    <div class="form-horizontal">
+                        <div class="container">
+                            <div class="col-sm-4" style="height: 30px;">
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label">Дата с</label>
+                                    <div class='input-group date' id='temperatureDateFrom'>
+                                        <input type='text' class="form-control" value="@chartRenderDto?.MeasurementPeriodStart" />
+                                        <span class="input-group-addon">
+                                            <span class="glyphicon glyphicon-calendar">
+                                            </span>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-4" style="height: 30px;">
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label">Дата по</label>
+                                    <div class='input-group date' id='temperatureDateTo'>
+                                        <input type='text' class="form-control" value="@chartRenderDto?.MeasurementPeriodEnd" />
+                                        <span class="input-group-addon">
+                                            <span class="glyphicon glyphicon-calendar">
+                                            </span>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-2" style="height: 30px; margin-left: 20px;">
+                                <div class="form-group">
+                                    <button id="refreshChart" class="btn btn-primary"><em class="fa fa-refresh"></em>&nbsp;Обновить</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="wrapper wrapper-content animated fadeIn">
+    <canvas id="canvas" style="display: block; width: 599px; height: 299px;" width="599" height="299" class="chartjs-render-monitor"></canvas>
+</div>
+
+
+
+@section scripts {
+    <script src="~/lib/chart.js/dist/Chart.js"></script>
+    <script src="~/lib/chart.js/samples/utils.js"></script>
+    <link type="text/css" rel="stylesheet" href="~/css/bootstrap-datetimepicker.min.css" />
+    <script type="text/javascript" src="~/lib/eonasdan-bootstrap-datetimepicker/src/js/bootstrap-datetimepicker.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery.countdown/2.2.0/jquery.countdown.min.js"></script>
+    <script>
+
+        window.chartColors = {
+            red: 'rgb(255, 0, 0)',
+            blue: 'rgb(54, 162, 235)',
+            grey: 'rgb(201, 203, 207)'
+        };
+
+        window.onload = function () {
+            renderChart();
+
+            var ctx = document.getElementById('canvas').getContext('2d');
+            window.myLine = new Chart(ctx, config);
+        };
+
+        var serviceProxy = new ServiceProxy();
+
+        $(document).ready(function () {
+            setInterval(fetchdata, 60000);
+            $('#refreshChart').on('click', renderChart);
+        });
+
+        Date.prototype.addDays = function(days) {
+            var date = new Date(this.valueOf());
+            date.setDate(date.getDate() + days);
+            return date;
+        }
+
+        var today = new Date();
+
+        $(function() {
+            $('#temperatureDateFrom').datetimepicker({
+                locale: 'ru',
+                format: 'DD.MM.YYYY HH:mm',
+                minDate: today.addDays(-10),
+                maxDate: today.addDays(1),
+                stepping: 1
+            });
+        });
+        $(function() {
+            $('#temperatureDateTo').datetimepicker({
+                locale: 'ru',
+                format: 'DD.MM.YYYY HH:mm',
+                minDate: today.addDays(-10),
+                maxDate: today.addDays(1),
+                stepping: 1
+            });
+        });
+
+        var color = Chart.helpers.color;
+        var config = {
+            type: 'bar',
+            data: {
+                labels: [],
+                datasets: [
+                    {
+                        type: 'line',
+                        label: '@Localizer["TemperatureInsidePos"]',
+                        backgroundColor: color(window.chartColors.red).alpha(0.5).rgbString(),
+                        borderColor: window.chartColors.red,
+                        lineTension: 0.2,
+                        fill: false
+                    },
+                    {
+                        type: 'bar',
+                        label: '@Localizer["PosDoorsState"]',
+                        backgroundColor: color(window.chartColors.blue).alpha(0.5).rgbString(),
+                        borderColor: window.chartColors.blue
+                    },
+                ]
+            },
+            options: {
+                responsive: true,
+                title: {
+                    display: true,
+                },
+                scales: {
+                    xAxes: [
+                        {
+                            type: 'time',
+                            barPercentage: 1.25,
+                            barThickness: 'flex',
+                            gridLines: {
+                                offsetGridLines: true
+                            },
+                            time: {
+                                unit: 'second',
+                                displayFormats: {
+                                    second: 'HH:mm'
+                                }
+                            },
+                            display: true,
+                            scaleLabel: {
+                                display: true,
+                                labelString: '@Localizer["ScaleXLabel"]'
+                            },
+                            ticks: {
+                                source: 'data',
+                                major: {
+                                    fontStyle: 'bold',
+                                    fontColor: '#FF0000'
+                                }
+                            }
+                        }
+                    ],
+                    yAxes: [
+                        {
+                            display: true,
+                            scaleLabel: {
+                                display: true,
+                                labelString: '@Localizer["ScaleYLabel"]'
+                            },
+                            ticks: {
+                                beginAtZero: true,
+                                stepSize: 1,
+                                min: -5,
+                                max: 25
+                            }
+                        }
+                    ]
+                }
+            }
+        };
+        
+        function renderChart() {
+            var posId = '@Model.PosId';
+            var measurementDateStart = $("#temperatureDateFrom").find("input").val();
+            var measurementDateEnd = $('#temperatureDateTo').find("input").val();
+            var url = `/api/pointsOfSale/${posId}/${measurementDateStart}/${measurementDateEnd}/posTemperatureChartRender`;
+            serviceProxy.getJsonResult(
+                url,
+                {},
+                fillChartData);
+        }
+
+        function fillChartData(data)
+        {
+            config.data.labels = getLabels(data);
+            config.data.datasets[0].data = getTemperatureData(data);
+            config.data.datasets[1].data = getDoorsStateData(data);
+            window.myLine.update();
+        }
+
+        function getLabels(data) {
+            var labels = [];
+            for (var index in data) {
+                var point = new Date(data[index].measurementDateTime);
+                labels.push(point);
+            }
+
+            return labels;
+        }
+
+        function getTemperatureData(data) {
+            var temperatureData = [];
+
+            for (var index in data) {
+                var point = {
+                    x: new Date(data[index].measurementDateTime),
+                    y: data[index].temperature
+                }
+                temperatureData.push(point);
+            }
+
+            return temperatureData;
+        }
+
+        function getDoorsStateData(data) {
+
+            var stateData = [];
+
+            for (var index in data) {
+                if (data[index].areDoorsOpened) {
+                    stateData.push(6);
+                }
+                else {
+                    stateData.push(3);
+                }
+            }
+
+            return stateData;
+        }
+
+        function fetchdata() {
+            var posId = '@Model.PosId';
+            var url = `/api/pointsOfSale/${posId}/posTemperatureChartRefresh`;
+            if (config.data.datasets.length > 0) {
+                serviceProxy.getJsonResult(
+                    url,
+                    {},
+                    refreshChartData);
+                window.myLine.update();
+            }
+        };
+
+        function refreshChartData(data) {
+            config.data.labels.push(data.measurementDateTime);
+            config.data.datasets[0].data.push({
+                x: new Date(data.measurementDateTime),
+                y: data.temperature
+            });
+            if (data.AreDoorsOpened) {
+                config.data.datasets[1].data.push(6);
+            }
+            else {
+                config.data.datasets[1].data.push(3);
+            }
+            if (config.data.labels.length >= 30) {
+                config.data.labels.shift();
+                config.data.datasets[0].data.shift();
+                config.data.datasets[1].data.shift();
+            }
+            $("#temperatureDateFrom").find("input").val(data.measurementPeriodStart);
+            $("#temperatureDateTo").find("input").val(data.measurementPeriodEnd);
+            window.myLine.update();
+        }
+
+
+    </script>
+}

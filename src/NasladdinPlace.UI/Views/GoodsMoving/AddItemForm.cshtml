@@ -1,0 +1,31 @@
+﻿@using NasladdinPlace.UI.ViewModels.Shared.ModalWindow
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Microsoft.EntityFrameworkCore.Internal
+@model NasladdinPlace.UI.ViewModels.Checks.CheckItemAdditionFormViewModel
+@inject IViewLocalizer Localizer
+
+@await Html.PartialAsync("_ModalHeader", new ModalWindowHeader
+{
+    Heading = Localizer["Adding item"].Value
+})
+
+<div class="modal-body form-horizontal">
+    <label style="font-size: large;" for="labeledGoodsSelectList">@Localizer["Not used label"].Value</label>
+    <select id="labeledGoodsSelectList" data-show-subtext="true" data-live-search="true" class="form-control selectpicker" data-size="10"
+            name="labelGoodId" asp-items="@Model.LabeledGoodItems">
+        <option default disabled>@Localizer["Choose good"].Value</option>
+    </select>
+</div>
+
+@await Html.PartialAsync("_ModalFooter", new ModalWindowFooter
+{
+    CancelButtonText = Localizer["Cancel"].Value,
+    SubmitButtonText = Localizer["Add"].Value,
+    SubmitButtonClass = $"btn-primary {(!Model.LabeledGoodItems.Items.Any() ? "disabled" : "")}",
+    SubmitButtonId = "btn-submit-add"
+})
+
+<script>
+    $(".selectpicker").selectpicker({
+    }).selectpicker('render');
+</script>

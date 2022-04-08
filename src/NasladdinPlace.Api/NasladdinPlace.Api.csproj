@@ -1,0 +1,70 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <DebugType>portable</DebugType>
+    <PreserveCompilationContext>true</PreserveCompilationContext>
+    <AssemblyName>NasladdinPlace.Api</AssemblyName>
+    <OutputType>Exe</OutputType>
+    <PackageId>NasladdinPlace.Api</PackageId>
+    <UserSecretsId>aspnet-NasladdinPlace-20170305043414</UserSecretsId>
+    <MvcRazorExcludeRefAssembliesFromPublish>false</MvcRazorExcludeRefAssembliesFromPublish>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <Optimize>True</Optimize>
+    <CodeAnalysisRuleSet>NasladdinPlace.Api.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <CodeAnalysisRuleSet>NasladdinPlace.Api.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CloudPaymentsClient\CloudPaymentsClient.csproj" />
+    <ProjectReference Include="..\FirebaseCloudMessagingClient\FirebaseCloudMessagingClient.csproj" />
+    <ProjectReference Include="..\NasladdinPlace.Application\NasladdinPlace.Application.csproj" />
+    <ProjectReference Include="..\NasladdinPlace.CheckOnline\NasladdinPlace.CheckOnline.csproj" />
+    <ProjectReference Include="..\NasladdinPlace.DAL\NasladdinPlace.DAL.csproj" />
+    <ProjectReference Include="..\NasladdinPlace.GoogleSpreadsheets\NasladdinPlace.Spreadsheets.csproj" />
+    <ProjectReference Include="..\NasladdinPlace.Infra.IoC\NasladdinPlace.Infra.IoC.csproj" />
+    <ProjectReference Include="..\NasladdinPlace.Dtos\NasladdinPlace.Dtos.csproj" />
+    <ProjectReference Include="..\NasladdinPlace.IntegrationTestsSmsReader\NasladdinPlace.IntegrationTestsSmsReader.csproj" />
+    <ProjectReference Include="..\NasladdinPlace.Reports\NasladdinPlace.Reports.csproj" />
+    <ProjectReference Include="..\NasladdinPlace.TelegramBot\NasladdinPlace.TelegramBot.csproj" />
+    <ProjectReference Include="..\NasladdinPlace.Utilities\NasladdinPlace.Utilities.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.1.15" />
+    <PackageReference Include="CommonMark.NET" Version="0.15.1" />
+    <PackageReference Include="MailKit" Version="2.5.0" />
+    <PackageReference Include="Microsoft.Azure.KeyVault" Version="3.0.5" />
+    <PackageReference Include="Microsoft.Azure.KeyVault.WebKey" Version="3.0.5" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.10" />
+    <PackageReference Include="OpenIddict" Version="2.0.0" />
+    <PackageReference Include="AspNet.Security.OAuth.Validation" Version="2.0.0" />
+    <PackageReference Include="AutoMapper" Version="8.1.1" />
+    <PackageReference Include="OpenIddict.EntityFrameworkCore" Version="2.0.0" />
+    <PackageReference Include="OpenIddict.Mvc" Version="2.0.0" />
+    <PackageReference Include="Refit" Version="5.0.23" />
+    <PackageReference Include="Serilog" Version="2.9.0" />
+    <PackageReference Include="Serilog.Sinks.Async" Version="1.4.0" />
+    <PackageReference Include="Serilog.Sinks.File" Version="4.1.0" />
+    <PackageReference Include="Serilog.Sinks.Literate" Version="3.0.0" />
+    <PackageReference Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
+    <PackageReference Include="Telegram.Bot" Version="15.3.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Services\WebSocket\ControllersInvocation\Helpers\" />
+    <Folder Include="wwwroot\logs\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Resources\AccountService\AccountServiceResource.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AccountServiceResource.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Resources\AccountService\AccountServiceResource.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>AccountServiceResource.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+</Project>

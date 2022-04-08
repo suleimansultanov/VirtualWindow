@@ -1,0 +1,101 @@
+﻿@using NasladdinPlace.UI.ViewModels.Base
+@using Microsoft.AspNetCore.Mvc.Localization
+@using NasladdinPlace.UI.Helpers
+@using NasladdinPlace.UI.Managers.Reference.Enums
+@model UniReferenceViewModel<BaseViewModel>
+@inject IViewLocalizer Localizer
+
+@{
+    var saveButton = Localizer["Save"].Value;
+    var cancel = Localizer["Cancel"].Value;
+}
+
+<div class="alert alert-info">
+    <span>@Localizer["AdditionalInfo"].Value</span>
+</div>
+
+<div class="modal" id="edit-setting-modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content animated fadeIn">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4>@Localizer["EditTitle"].Value</h4>
+            </div>
+            <div class="modal-body">
+                @foreach (var info in Model.FormRendererInfos.Where(x => x.RenderInfo.DisplayType != DisplayType.Hide))
+                {
+                    if (info.RenderInfo.Control == RenderControl.Custom)
+                    {
+                        continue;
+                    }
+
+                    <div class="form-group row">
+                        <label class="col-lg-12">@info.RenderInfo.DisplayName</label>
+                        <div class="col-lg-12">@await Html.RenderControlAsync(info.RenderInfo)</div>
+                    </div>
+                }
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-white" data-dismiss="modal">@cancel</button>
+                <button type="button" class="btn btn-primary" data-bind="click: savePromotion">@saveButton</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    window.getGridCustomHandler = function () {
+        return new GridCustomHandler(
+            vm => {
+                vm.PromotionType = ko.observable();
+                vm.BonusValue = ko.observable();
+                vm.IsEnabled = ko.observable();
+                vm.IsNotificationEnabled = ko.observable();
+                vm.NotificationStartTime = ko.observable();
+                vm.PromotionSettingId = ko.observable();
+
+                var selectedItem = null;
+
+                vm.edit = function (item) {
+                    selectedItem = item;
+
+                    vm.PromotionType(item.PromotionType());
+                    vm.BonusValue(item.BonusValue());
+                    vm.IsEnabled(item.IsEnabled());
+                    vm.IsNotificationEnabled(item.IsNotificationEnabled());
+                    vm.NotificationStartTime(item.NotificationStartTime());
+                    vm.PromotionSettingId(item.PromotionSettingId());
+
+                    $("#edit-setting-modal").modal();
+                }
+
+                vm.savePromotion = function () {
+                    bootstrapConfirmSave('@Html.Raw(Localizer["Attention"].Value)',
+                                     '@Html.Raw(Localizer["Confirmation message"].Value)', performSave);
+                }
+
+                function performSave() {
+                    const url = '/api/promotionSettings';
+                    const data = {
+                        PromotionType: vm.PromotionType(),
+                        BonusValue: vm.BonusValue(),
+                        IsEnabled: vm.IsEnabled(),
+                        IsNotificationEnabled: vm.IsNotificationEnabled(),
+                        NotificationStartTime: vm.NotificationStartTime(),
+                        PromotionSettingId: vm.PromotionSettingId()
+                    };
+
+                    vm.serviceProxy.putJsonResult(url, data, function (result) {
+                        if (result.error) {
+                            bootstrapError(result.error);
+                        } else {
+                            bootstrapSuccess("@Localizer["Save action"].Value", result.message);
+                            $("#edit-setting-modal").modal('toggle');
+                            vm.refresh();
+                        }
+                    });
+                }
+
+            });
+    };
+</script>

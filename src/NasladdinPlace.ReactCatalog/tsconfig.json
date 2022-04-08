@@ -1,0 +1,40 @@
+{
+  	"compilerOptions": {
+        "module": "commonjs",
+        "removeComments": true,
+        "strictNullChecks": true,
+        "strictPropertyInitialization": true,
+        "esModuleInterop": true,
+        "strictFunctionTypes": true,
+        "noImplicitReturns": true,
+        "noImplicitThis": true,
+        "noImplicitAny": true,
+        "noUnusedParameters": true,
+        "noUnusedLocals": true,
+        "resolveJsonModule": true,
+        "inlineSourceMap": true,
+        "forceConsistentCasingInFileNames": true,
+        "target": "es5",
+        "lib": [
+        	"es6",
+        	"dom"
+        ],
+        "jsx": "react",
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "allowJs": true,
+        "moduleResolution": "node",
+        "baseUrl": "."
+  },
+	"compileOnSave": false,
+	"include": [
+    "./src/**/*.js",
+    "./src/**/*.ts",
+    "./src/**/*.tsx",
+    "./src/**/*.json"
+  ],
+	"exclude": [
+    "node_modules",
+    "MockData"
+  ]
+}

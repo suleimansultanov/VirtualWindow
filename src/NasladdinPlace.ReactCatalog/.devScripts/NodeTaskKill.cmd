@@ -1,0 +1,1 @@
+c:\Windows\System32\taskkill.exe /f /im node.exe

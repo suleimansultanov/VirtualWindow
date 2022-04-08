@@ -1,0 +1,5 @@
+﻿@model NasladdinPlace.UI.Managers.Reference.Attributes.RenderAttribute
+@{
+    var sortTypeVal = $"{Model.PropertyName}.SortType()";
+}
+<i class="fa " aria-hidden="true" data-bind="click: $root.sort.bind($data, @Model.PropertyName), style: { color: @sortTypeVal == 0 ? '#000000' : '#62cb31' }, css: { 'fa-sort': @sortTypeVal == 0, 'fa-sort-asc': @sortTypeVal == 1, 'fa-sort-desc': @sortTypeVal == 2 }"></i>

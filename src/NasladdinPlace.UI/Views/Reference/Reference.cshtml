@@ -1,0 +1,15 @@
+﻿@using NasladdinPlace.UI.ViewModels.Base
+@model UniReferenceViewModel<BaseViewModel>
+@{
+    ViewBag.Title = Model.Configuration?.Title ?? "";
+}
+
+<div id = "reference-common">
+    <partial name="~/Views/Reference/_Breadcrumbs.cshtml" model="@Model" />
+
+    <partial name="~/Views/Reference/_ReferenceMainPartial.cshtml" model="@Model" />
+</div>    
+
+@section scripts {
+    <partial name="~/Views/Reference/_ReferenceScript.cshtml" model="@Model" />
+}

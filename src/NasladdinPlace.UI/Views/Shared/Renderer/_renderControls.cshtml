@@ -1,0 +1,95 @@
+﻿@using NasladdinPlace.UI.Helpers
+@using NasladdinPlace.UI.Managers.Reference.Enums
+@using NasladdinPlace.Utilities.EnumHelpers
+@model NasladdinPlace.UI.Managers.Reference.Attributes.RenderAttribute
+@{
+    var info = Model;
+}
+@switch (info.Control)
+{
+    case RenderControl.Combo:
+    case RenderControl.ComboEmpty:
+        var withEmpty = info.Control == RenderControl.ComboEmpty;
+        <select class="form-control input-sm"
+                data-bind="@info.GetComboDataSourceBinding(): @info.GetComboDataSource(),
+                            optionsText : 'Text', optionsValue : 'Value', @(withEmpty ? "optionsCaption: '-Не указано-', " : "")
+                            value:@info.PropertyName @info.GetEnableCondition()"
+                autocomplete="off" @Html.Raw(info.GetHtmlAttributes()) @(info.ReadOnly ? "disabled=disabled" : "")></select>
+        break;
+    case RenderControl.Date:
+        <div class="input-group">
+            <input class="form-control input-sm date" data-bind="date: @info.PropertyName @info.GetEnableCondition()" data-field-type="date" type="text" @Html.Raw(info.GetHtmlAttributes()) />
+            <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+        </div>
+        break;
+    case RenderControl.DateTime:
+        <div class="input-group">
+            <input class="form-control input-sm date" data-bind="date: @info.PropertyName, dateFormat:'DD.MM.YYYY HH:mm' @info.GetEnableCondition()" data-field-type="datetime" type="text" @Html.Raw(info.GetHtmlAttributes())>
+            <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+        </div>
+        break;
+    case RenderControl.Time:
+        <input class="form-control input-sm date" data-bind="date: @info.PropertyName, dateFormat:'HH:mm' @info.GetEnableCondition()" data-field-type="datetime" type="text" @Html.Raw(info.GetHtmlAttributes())>
+        break;
+    case RenderControl.TimeSpan:
+        <input class="form-control input-sm" data-bind="shortTime: @info.PropertyName, @info.GetEnableCondition()" data-field-type="shorttime" type="text" @Html.Raw(info.GetHtmlAttributes())>
+        break;
+    case RenderControl.Decimal:
+        <input class="form-control input-sm" data-bind="numeric: @info.PropertyName, decimalPlaces: 2 @info.GetEnableCondition()" data-field-type="decimal" type="text" @Html.Raw(info.GetHtmlAttributes()) />
+        break;
+    case RenderControl.Integer:
+        <input class="form-control input-sm" data-bind="numeric: @info.PropertyName @info.GetEnableCondition()" data-field-type="integer" type="text" @Html.Raw(info.GetHtmlAttributes()) />
+        break;
+    case RenderControl.YesNo:
+        <select class="form-control input-sm" data-bind="options: [{Text:'Да',Value:true}, {Text:'Нет',Value:false}], optionsText : 'Text', optionsValue : 'Value', value:@info.PropertyName @info.GetEnableCondition()" autocomplete="off" @Html.Raw(info.GetHtmlAttributes()) @(info.ReadOnly ? "disabled=disabled" : "")></select>
+        break;
+    case RenderControl.YesNoEmpty:
+        <select class="form-control input-sm" data-bind="options: [{Text:'Да',Value:true}, {Text:'Нет',Value:false}], optionsText : 'Text', optionsValue : 'Value', optionsCaption: '-Не указано-', value:@info.PropertyName @info.GetEnableCondition()" autocomplete="off" @Html.Raw(info.GetHtmlAttributes()) @(info.ReadOnly ? "disabled=disabled" : "")></select>
+        break;
+    case RenderControl.TextArea:
+        <textarea rows="5" cols="45" class="form-control input-sm" data-bind="value:@info.PropertyName" @Html.Raw(info.GetHtmlAttributes())></textarea>
+        break;
+    case RenderControl.TextReferences:
+        {
+            var attribute = info.TextReferenceSource.GetTextReferenceAttribute();
+            <div class="input-group">
+                <input class="form-control input-sm" data-bind="value:@info.PropertyName @info.GetEnableCondition()" @Html.Raw(info.GetHtmlAttributes()) />
+                <span class="input-group-btn">
+                    <button type="button" class="btn btn-sm btn-default narrow" data-bind="click:$root.selectTextReference.bind($data, @info.PropertyName,'@info.TextReferenceSource.ToString()', '@info.TextReferenceSource.GetDisplayName()', '@attribute.FilterPartialName', @("false"), $data, @(string.IsNullOrEmpty(info.TextReference) ? "''" : info.TextReference), '@attribute.Data', '@info.PropertyName', '@info.DependencyProperty' ) @info.GetEnableCondition()" @Html.Raw(info.GetHtmlAttributes())>...</button>
+                </span>
+            </div>
+        }
+        break;
+    case RenderControl.TextReferenceValueText:
+        <div class="input-group">
+            <input class="form-control input-sm" data-bind="value:@info.PropertyName" @Html.Raw(info.GetHtmlAttributes()) type="hidden" />
+            <input class="form-control input-sm" data-bind="value: @info.GetTextReference(), attr: {title: @info.GetTextReference()}" readonly="readonly" @Html.Raw(info.GetHtmlAttributes()) />
+            @if (!info.ReadOnly)
+            {
+                var attribute = info.TextReferenceSource.GetTextReferenceAttribute();
+                <span class="input-group-btn">
+                    <button type="button" class="btn btn-outline btn-default" data-bind="click:$root.selectTextReferenceValueText.bind($data, @info.PropertyName, @info.GetTextReference(),'@info.TextReferenceSource.ToString()', '@info.TextReferenceSource.GetDisplayName()', '@attribute.FilterPartialName', false , '@attribute.Data', '@info.PropertyName')">...</button>
+                    <button type="button" class="btn btn-outline btn-default" data-bind="click: function(data, event) { @($"{info.PropertyName}(null);") @($"{info.GetTextReference()}(null);") }"><em class="fa fa-times"></em></button>
+                </span>
+            }
+        </div>
+        break;
+    case RenderControl.Select:
+        <label class="checkbox-in-cell" data-bind="if: !$data.extend || !$data.extend.isnew">
+            <input type="checkbox" data-bind="checkedValue: @($"{info.PropertyName}()"), checked: $parent.selectedArray">
+        </label>
+        break;
+    case RenderControl.SimpleSelect:
+        <input type="checkbox" data-bind="checkedValue: @($"{info.PropertyName}()"), checked: @($"{info.PropertyName}")">
+        break;
+    case RenderControl.Password:
+        <input type="password" class="form-control input-sm" data-bind="value: @info.PropertyName" />
+        break;
+    case RenderControl.Custom:
+        @await Html.PartialAsync(info.PartialName, info)
+        break;
+    default:
+        <input class="form-control input-sm" data-bind="value:@info.PropertyName @info.GetEnableCondition()" @Html.Raw(info.GetHtmlAttributes()) />
+        break;
+}
+

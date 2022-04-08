@@ -1,0 +1,206 @@
+﻿@using NasladdinPlace.UI.ViewModels.Base
+@using Microsoft.AspNetCore.Mvc.Localization
+@using NasladdinPlace.UI.Helpers
+@using NasladdinPlace.UI.Managers.Reference.Enums
+@model UniReferenceViewModel<BaseViewModel>
+@inject IViewLocalizer Localizer
+
+@{
+    var saveButton = Localizer["Save"].Value;
+    var cancel = Localizer["Cancel"].Value;
+}
+
+<div class="alert alert-success">
+    <h4>@Localizer["Instructions for working with Google Sheets"].Value</h4>
+    <ul>
+        <li>
+            @Localizer["Open"].Value <a href="https://docs.google.com/spreadsheets">@Localizer["Google Sheets"].Value <em class="fa fa-external-link"></em></a> @Localizer["And"].Value.ToLowerInvariant() @Localizer["Add table"].Value.ToLowerInvariant().
+        </li>
+        <li>
+            @($"{Localizer["Click"].Value} {Localizer["Share"].Value} {Localizer["or"].Value}")&nbsp;<em class="fa fa-user-plus"></em>.</li>
+        <li>
+            <a href="https://support.google.com/drive/answer/2494822?co=GENIE.Platform%3DDesktop&hl=ru">@Localizer["Share with specific people"].Value</a> <strong>support@nasladdinspreadsheetsproject.iam.gserviceaccount.com</strong>.</li>
+        <li>
+            @($"{Localizer["Create sheet or enter a name"].Value}.")
+        </li>
+    </ul>
+    <p class="m-t-sm"><strong>@Localizer["NOTE: Data is uploaded every day at 10:00 AM Moscow time."].Value</strong></p>
+</div>
+<div class="modal" id="add-edit-setting-modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content animated fadeIn">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 data-bind="text : modalTitle"></h4>
+            </div>
+            <div class="modal-body">
+                @foreach (var info in Model.FormRendererInfos.Where(x => x.RenderInfo.DisplayType != DisplayType.Hide))
+                {
+                    if (info.RenderInfo.Control == RenderControl.Custom)
+                    {
+                        continue;
+                    }
+
+                    <div class="form-group row">
+                        <label class="col-lg-12">@info.RenderInfo.DisplayName</label>
+                        <div class="col-lg-12">@await Html.RenderControlAsync(info.RenderInfo)</div>
+                    </div>
+                }
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-white" data-dismiss="modal">@cancel</button>
+                <button type="button" class="btn btn-primary" data-bind="click: saveReportUploadingInfo">@saveButton</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    window.getGridCustomHandler = function() {
+        ko.validation.init({
+                registerExtenders: true,
+                messagesOnModified: true,
+                insertMessages: true,
+                parseInputAttributes: true,
+                messageTemplate: null
+            },
+            true);
+
+        const modalId = "#add-edit-setting-modal";
+
+        return new GridCustomHandler(
+            vm => {
+                vm.Id = ko.observable();
+                vm.Type = ko.observable();
+                vm.Description = ko.observable();
+                vm.Url = ko.observable();
+                vm.Sheet = ko.observable();
+                vm.BatchSize = ko.observable();
+
+                vm.validatedFields = ko.validatedObservable([
+                    vm.Sheet.extend({
+                        required: true
+                    }),
+                    vm.BatchSize.extend({
+                        required: true
+                    }),
+                    vm.Url.extend({
+                        required: true,
+                        pattern: {
+                            message: '@Html.Raw(Localizer["Invalid format url."].Value)',
+                            params: /^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/
+                        }
+                    })
+                ]);
+
+                vm.modalTitle = ko.observable();
+
+                vm.add = function () {
+                    clearNewItem();
+                    vm.modalTitle('@Html.Raw(Localizer["AddTitle"].Value)');
+                    $(modalId).modal();
+                }
+
+                var selectedItem = null;
+
+                vm.edit = function (item) {
+                    selectedItem = item;
+
+                    vm.Id(item.Id());
+                    vm.Type(item.Type());
+                    vm.Description(item.Description());
+                    vm.Url(item.Url());
+                    vm.Sheet(item.Sheet());
+                    vm.BatchSize(item.BatchSize());
+
+                    vm.modalTitle('@Html.Raw(Localizer["EditTitle"].Value)');
+
+                    $(modalId).modal();
+                }
+
+                vm.remove = function(item) {
+                    bootstrapConfirmDelete(
+                        '@Html.Raw(Localizer["Attention"].Value)',
+                        '@Html.Raw(Localizer["Confirming delete message"].Value)',
+                        function() {
+                            const url = '/api/reportsUploadingInfos';
+
+                            vm.serviceProxy.deleteJsonResult(url,
+                                {
+                                    Id: item.Id()
+                                },
+                                function(result) {
+                                    if (result.error) {
+                                        bootstrapError(result.error);
+                                    } else {
+                                        bootstrapSuccess('@Html.Raw(Localizer["Removing"].Value)', '@Html.Raw(Localizer["Report uploading info successfully removed"].Value)');
+                                        vm.refresh();
+                                    }
+                                });
+                        });
+                }
+
+                vm.startUpload = function(item) {
+                    const url = `/api/reportsUploadingInfos/${item.Type()}`;
+                    vm.serviceProxy.postJsonResult(url,
+                        {},
+                        function(result) {
+                            if (result.error) {
+                                bootstrapError(result.error);
+                            } else {
+                                bootstrapSuccess('@Html.Raw(Localizer["Upload"].Value)', '@Html.Raw(Localizer["Report uploading successfully started"].Value)');
+                            }
+                        });
+                }
+
+                vm.saveReportUploadingInfo = function() {
+                    const data = {
+                        Id: vm.Id(),
+                        Type: vm.Type(),
+                        Description: vm.Description(),
+                        Url: vm.Url(),
+                        Sheet: vm.Sheet(),
+                        BatchSize: vm.BatchSize()
+                    };
+
+                    if (vm.validatedFields.isValid()) {
+                        const url = '/api/reportsUploadingInfos';
+                        if (vm.Id() == 0) {                          
+                            vm.serviceProxy.postJsonResult(url,
+                                data,
+                                function(result) {
+                                    if (result.error) {
+                                        bootstrapError(result.error);
+                                    } else {
+                                        bootstrapSuccess('@Html.Raw(Localizer["Saving"].Value)', '@Html.Raw(Localizer["Report uploading info successfully saved"].Value)');
+                                        $(modalId).modal('toggle');
+                                        vm.refresh();
+                                    }
+                                });
+                        } else {
+                            vm.serviceProxy.putJsonResult(url,
+                                data,
+                                function(result) {
+                                    if (result.error) {
+                                        bootstrapError(result.error);
+                                    } else {
+                                        bootstrapSuccess('@Html.Raw(Localizer["Editing"].Value)', '@Html.Raw(Localizer["Report uploading info successfully saved"].Value)');
+                                        $(modalId).modal('toggle');
+                                        vm.refresh();
+                                    }
+                                });
+                        }
+                    }
+                }
+
+                function clearNewItem() {
+                    vm.Id(0);
+                    vm.Description(null);
+                    vm.Url(null);
+                    vm.Sheet(null);
+                    vm.BatchSize(null);
+                }
+            });
+    };
+</script>
+

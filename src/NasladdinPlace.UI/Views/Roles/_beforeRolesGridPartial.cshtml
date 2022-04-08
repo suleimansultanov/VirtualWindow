@@ -1,0 +1,134 @@
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@using NasladdinPlace.UI.Helpers
+@using NasladdinPlace.UI.ViewModels.Base
+@using NasladdinPlace.UI.ViewModels.Roles
+@model UniReferenceViewModel<BaseViewModel>
+
+@inject IViewLocalizer Localizer
+
+@{
+    var saveButton = Localizer["Save"].Value;
+    var cancel = Localizer["Cancel"].Value;
+    var formRenderer = new FormRendererHelper<RoleViewModel>();
+}
+
+<div class="modal" id="add-role-modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content animated fadeIn">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4>@Localizer["Adding role"].Value</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group row">
+                    <label class="col-lg-12">@Html.RenderDisplay(formRenderer.Get(f => f.Name))</label>
+                    <div class="col-lg-12">@await Html.RenderControlAsync(formRenderer.Get(f => f.Name))</div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-lg-12">@Html.RenderDisplay(formRenderer.Get(f => f.Description))</label>
+                    <div class="col-lg-12">@await Html.RenderControlAsync(formRenderer.Get(f => f.Description))</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-white" data-dismiss="modal">@cancel</button>
+                <button type="button" class="btn btn-primary" id="submit" data-bind="click: addRole">@saveButton</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    window.getGridCustomHandler = function () {
+        ko.validation.init({
+            registerExtenders: true,
+            messagesOnModified: true,
+            insertMessages: true,
+            parseInputAttributes: true,
+            messageTemplate: null
+        },
+            true);
+
+        return new GridCustomHandler(
+            vm => {
+                vm.Name = ko.observable();
+                vm.Description = ko.observable();
+
+                vm.validatedFields = ko.validatedObservable([
+                    vm.Name.extend({
+                        required: true
+                    }),
+                    vm.Description.extend({
+                        required: true
+                    })
+                ]);
+
+                const rolesUrl = '/api/roles/';
+
+                vm.openAddModal = function (item) {
+                    vm.Name(item.Name());
+                    vm.Description(item.Description());
+                    
+                    $("#add-role-modal").modal('show');
+                }
+
+                vm.addRole = function () {
+                    if (vm.validatedFields.isValid()) {
+                        var data = {
+                            Name: vm.Name(),
+                            Description: vm.Description()
+                        };
+
+                        vm.serviceProxy.postJsonResult(rolesUrl,
+                            data,
+                            function () {
+                                bootstrapSuccess('@Localizer["Role created successfully!"].Value');
+                                $("#add-role-modal").modal('hide');
+                                vm.refresh();
+                                vm.Name(null);
+                                vm.Description(null);
+                            },
+                            function (error) {
+                                vm.refresh();
+                                notifyError(error);
+                            });
+                        } else {
+                        notifyError('@Html.Raw(Localizer["Fill all fields"].Value)');
+                    }
+                }
+
+                vm.remove = function(item) {
+                    bootstrapConfirmDelete(
+                        '@Html.Raw(Localizer["Attention"].Value)',
+                        `@Html.Raw(Localizer["Confirming delete message"].Value) — ${item.Name()}?`,
+                        function() {
+                            const url = rolesUrl + item.Id();
+
+                            vm.serviceProxy.deleteJsonResult(url,
+                                {},
+                                function(result) {
+                                    if (result.error) {
+                                        bootstrapError(result.error);
+                                    } else {
+                                        bootstrapSuccess('@Html.Raw(Localizer["Removing"].Value)',
+                                            '@Html.Raw(Localizer["Role successfully removed"].Value)');
+                                        vm.refresh();
+                                    }
+                                });
+                        });
+                }
+            });
+
+        function notifyError(result) {
+            if (typeof result === 'string' || typeof value === "undefined") {
+                bootstrapError(result);
+            }
+            else if (Array.isArray(result.responseJSON.errors)) {
+                result.responseJSON.errors.forEach(function (error) {
+                    bootstrapError(error);
+                });
+            } else {
+                bootstrapError(result.responseJSON.error);
+            }
+        }
+    };
+</script>

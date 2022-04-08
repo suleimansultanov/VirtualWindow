@@ -1,0 +1,43 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <AssemblyName>NasladdinPlace.Core</AssemblyName>
+    <PackageId>NasladdinPlace.Core</PackageId>
+    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <CodeAnalysisRuleSet>NasladdinPlace.Core.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <CodeAnalysisRuleSet>NasladdinPlace.Core.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="FluentScheduler" Version="5.3.0" />
+    <PackageReference Include="FluentValidation.AspNetCore" Version="8.4.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="2.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="2.1.6" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CloudPaymentsClient\CloudPaymentsClient.csproj" />
+    <ProjectReference Include="..\NasladdinPlace.CheckOnline\NasladdinPlace.CheckOnline.csproj" />
+    <ProjectReference Include="..\NasladdinPlace.Logging\NasladdinPlace.Logging.csproj" />
+    <ProjectReference Include="..\NasladdinPlace.Payment\NasladdinPlace.Payment.csproj" />
+    <ProjectReference Include="..\NasladdinPlace.Utilities\NasladdinPlace.Utilities.csproj" />
+    <ProjectReference Include="..\PagedList\PagedList.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Services\Authorization\AppFeatures\Resources\PermissionsResource.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>PermissionsResource.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Services\Authorization\AppFeatures\Resources\PermissionsResource.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>PermissionsResource.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+</Project>

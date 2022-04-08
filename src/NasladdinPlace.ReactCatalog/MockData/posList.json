@@ -1,0 +1,53 @@
+{
+    "lastVisited":  {
+        "id": 1,
+        "name": "ВДНХ",
+        "location": "Проспект мира",
+        "temperature": 3,
+        "restrictedAccess": false
+    },
+    "items": [
+        {
+            "id": 36,
+            "name": "R1 Мастерская ",
+            "location": "Варшавское шоссе, 56 с3, 1 эт",
+            "temperature": 2,
+            "restrictedAccess": false
+        },
+        {
+            "id": 1,
+            "name": "ВДНХ",
+            "location": "Проспект мира",
+            "temperature": 3,
+            "restrictedAccess": false
+        },
+        {
+            "id": 2,
+            "name": "R2D2",
+            "location": "Планета Нептун",
+            "temperature": 5,
+            "restrictedAccess": false
+        },
+        {
+            "id": 3,
+            "name": "ЦСКА",
+            "location": "Варшавский проспект",
+            "temperature": 7,
+            "restrictedAccess": false
+        },
+        {
+            "id": 4,
+            "name": "Варвара",
+            "location": "Проспект мира",
+            "temperature": 1,
+            "restrictedAccess": false
+        },
+        {
+            "id": 5,
+            "name": "Карпинка",
+            "location": "Свердловский проспект",
+            "temperature": 2,
+            "restrictedAccess": false
+        }
+    ]
+}

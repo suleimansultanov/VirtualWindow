@@ -1,0 +1,49 @@
+﻿@using NasladdinPlace.UI.Managers.Reference.Enums
+@using NasladdinPlace.UI.ViewModels.Base
+@model NasladdinPlace.UI.Managers.Reference.Attributes.RenderAttribute
+@{
+    var info = Model;
+}
+@switch (info.Control)
+{
+    case RenderControl.Combo:
+    case RenderControl.ComboEmpty:
+        <span data-bind='textOptions: @info.GetComboDataSource(), value:@info.PropertyName'></span>
+        break;
+    case RenderControl.Date:
+        <span data-bind="date:@info.PropertyName,dateFormat: 'DD.MM.YYYY'"></span>
+        break;
+    case RenderControl.DateTime:
+        <span data-bind="date:@info.PropertyName, dateFormat: 'DD.MM.YYYY HH:mm:ss'"></span>
+        break;
+    case RenderControl.Time:
+        <span data-bind="date:@info.PropertyName, dateFormat: 'HH:mm:ss'"></span>
+        break;
+    case RenderControl.Decimal:
+        <span data-bind="numeric: @info.PropertyName, decimalPlaces: 2"></span>
+        break;
+    case RenderControl.Integer:
+        <span data-bind="text:@info.PropertyName"></span>
+        break;
+    case RenderControl.YesNo:
+    case RenderControl.YesNoEmpty:
+        <span data-bind="textOptions: [{Text:'Да',Value:true}, {Text:'Нет',Value:false}], value:@info.PropertyName"></span>
+        break;
+    case RenderControl.TextReferences:
+        <span data-bind="text: @info.TextReference"></span>
+        break;
+    case RenderControl.TextReferenceValueText:
+        <span data-bind="text: @info.GetTextReference()"></span>
+        break;
+    case RenderControl.Select:
+        <label class="checkbox-in-cell" data-bind="if: !$data.extend || !$data.extend.isnew">
+            <input type="checkbox" data-bind="checkedValue: @($"{info.PropertyName}()"), checked: $parent.selectedArray">
+        </label>
+        break;
+    case RenderControl.Custom:
+        @await Html.PartialAsync(info.PartialName, info)
+        break;
+    default:
+        <span data-bind="text:@info.PropertyName"></span>
+        break;
+}

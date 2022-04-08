@@ -1,0 +1,5 @@
+﻿<ol class="breadcrumb" data-bind="foreach: $data.LabeledGoods()" style="background-color: transparent;">
+    <li>
+        <a class="btn-link" data-bind="css: { 'todo-completed': IsDisabled() }, text: $root.getFormattedLabeledGood(Label()), attr: { href: $root.getHref($data) }" target="_blank"></a>
+    </li>
+</ol>

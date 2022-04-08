@@ -1,0 +1,319 @@
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
+@model NasladdinPlace.UI.ViewModels.Goods.GoodsFormViewModel
+
+@{
+    ViewData["Title"] = Localizer[Model.Header].Value;
+}
+<div class="row row-eq-height wrapper border-bottom white-bg p-sm">
+    <div class="col-xs-9 col-sm-10">
+        <ol class="breadcrumb">
+            <li class="hidden-xs">
+                <a href="@Url.Action("All","PointsOfSale")">@Localizer["Home"].Value</a>
+            </li>
+            <li class="hidden-xs">
+                <a href="@Url.Action("GetGoods", "Goods")">@Localizer["Goods"].Value</a>
+            </li>
+            <li class="active">
+                <strong id="form-title">@ViewData["Title"]</strong>
+            </li>
+        </ol>
+    </div>
+    <div class="col-xs-3 col-sm-2">
+    </div>
+</div>
+
+<div class="wrapper wrapper-content animated fadeIn">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-content">
+                    <form id="good-form" asp-controller="Goods" asp-action="AddGoodAsync" class="form-horizontal"
+                          data-bind="submit: submitForm" method="post" enctype="multipart/form-data" autocomplete="off">
+                        <input class="good-id" asp-for="Id" type="hidden" value="@Model.Id" />
+                        <div id="good-form-tabs">
+                            <h3>@Localizer["General info"].Value</h3>
+                            <section>
+                                <div class="form-group form-eq-height">
+                                    <label class="col-sm-2 control-label">@Localizer["Name"].Value</label>
+                                    <div class="col-sm-4">
+                                        <input asp-for="Name" class="form-control m-b-xxs" />
+                                        <span asp-validation-for="Name" class="text-danger"></span>
+                                    </div>
+                                    <label class="col-sm-2 control-label">@Localizer["Good id"].Value</label>
+                                    <div class="col-sm-4">
+                                        <input value="@Model.Id" class="form-control m-b-xxs disabled-input good-id" disabled />
+                                    </div>
+                                </div>
+                                <div class="form-group form-eq-height">
+                                    <label class="col-sm-2 control-label">@Localizer["Description"].Value</label>
+                                    <div class="col-sm-4">
+                                        <textarea asp-for="Description" class="form-control m-b-xxs"></textarea>
+                                        <span asp-validation-for="Description" class="text-danger"></span>
+                                    </div>
+                                    <label class="col-sm-2 control-label">@Localizer["Composition"].Value</label>
+                                    <div class="col-sm-4">
+                                        <textarea asp-for="Composition" class="form-control m-b-xxs"></textarea>
+                                        <span asp-validation-for="Composition" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group form-eq-height">
+                                    <label class="col-sm-2 control-label">@Localizer["Maker"].Value</label>
+                                    <div class="col-sm-4">
+                                        <select asp-for="MakerId" asp-items="@Model.MakerSelectList" class="form-control m-b-xxs"></select>
+                                        <span asp-validation-for="MakerId" class="text-danger"></span>
+                                    </div>
+                                    <label class="col-sm-2 control-label">@Localizer["GoodCategory"].Value</label>
+                                    <div class="col-sm-4">
+                                        <select asp-for="GoodCategoryId" asp-items="@Model.GoodCategorySelectList" class="form-control m-b-xxs"></select>
+                                        <span asp-validation-for="GoodCategoryId" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group form-eq-height">
+                                    <label class="col-sm-2 control-label">@Localizer["Volume"].Value</label>
+                                    <div class="col-sm-4">
+                                        <input asp-for="Volume" asp-items="@Model.Volume" class="form-control m-b-xxs" />
+                                        <span asp-validation-for="Volume" class="text-danger"></span>
+                                    </div>
+                                    <label class="col-sm-2 control-label">@Localizer["Net weight"].Value</label>
+                                    <div class="col-sm-4">
+                                        <input asp-for="NetWeight" class="form-control m-b-xxs" />
+                                        <span asp-validation-for="NetWeight" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label">
+                                        @Localizer["Image"].Value
+                                        <br />
+                                        <br />
+                                        @Html.Raw(Localizer["Image specification description"].Value)
+                                    </label>
+                                    <div class="col-sm-4 flex-div">
+                                        <div class="col-sm-7 image-pl-0 image-pr-0 width-100 img-thumbnail text-center">
+                                            @if (!string.IsNullOrEmpty(Model.ImagePath))
+                                            {
+                                                <img alt="Good image" id="imageSize" />
+                                            }
+                                            else
+                                            {
+                                                <img alt="Good image" src="@Model.DefaultImagePath" />
+                                            }
+                                        </div>
+                                    </div>
+                                    <label class="col-sm-2 control-label">@Localizer["Upload image"].Value</label>
+                                    <div class="col-sm-4">
+                                        <input class="form-control" type="file" id="fileUpload" name="fileUpload" accept="image/x-png,image/jpg,image/jpeg,image/webp" />
+                                        <span asp-validation-for="Image" class="text-danger"></span>
+                                    </div>
+                                    <div class="p-t-4">
+                                        <label class="col-sm-2 control-label">@Localizer["Publishing status"].Value</label>
+                                        <div class="col-sm-4">
+                                            <select asp-for="PublishingStatus" asp-items="@Model.PublishingStatusSelectList" class="form-control m-b-xxs"></select>
+                                            <span asp-validation-for="PublishingStatus" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+                            <h3>@Localizer["Nutrition"].Value</h3>
+                            <section>
+                                <div class="form-group form-eq-height">
+                                    <label class="col-sm-2 control-label">@Localizer["Calories (kcal)"].Value</label>
+                                    <div class="col-sm-4">
+                                        <input asp-for="CaloriesInKcal" class="form-control m-b-xxs" />
+                                        <span asp-validation-for="CaloriesInKcal" class="text-danger"></span>
+                                    </div>
+                                    <label class="col-sm-2 control-label">@Localizer["Proteins (grams)"].Value</label>
+                                    <div class="col-sm-4">
+                                        <input asp-for="ProteinsInGrams" class="form-control m-b-xxs" />
+                                        <span asp-validation-for="ProteinsInGrams" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group form-eq-height">
+                                    <label class="col-sm-2 control-label">@Localizer["Fats (grams)"].Value</label>
+                                    <div class="col-sm-4">
+                                        <input asp-for="FatsInGrams" class="form-control m-b-xxs" />
+                                        <span asp-validation-for="FatsInGrams" class="text-danger"></span>
+                                    </div>
+                                    <label class="col-sm-2 control-label">@Localizer["Carbohydrates (grams)"].Value</label>
+                                    <div class="col-sm-4">
+                                        <input asp-for="CarbohydratesInGrams" class="form-control m-b-xxs" />
+                                        <span asp-validation-for="CarbohydratesInGrams" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </section>
+                        </div>
+                        <div class="form-group row ibox-footer">
+                            <div class="col-xs-12 col-sm-6 col-md-8">
+                                <div class="form-group form-eq-height">
+                                    <div class="col-sm-9">
+                                        <button type="button"
+                                                class="btn btn-default"
+                                                id="cancel"
+                                                onclick="window.history.back()">
+                                            <em class="fa fa-remove"></em>&nbsp;@Localizer["Cancel"].Value
+                                        </button>
+                                        <button class="btn btn-primary" type="submit"
+                                                data-bind="enable: buttonEnabled">
+                                            <em class="fa fa-save"></em>&nbsp;@Localizer["Save"].Value
+                                        </button>
+                                        <a type="button"
+                                           class="btn btn-default pull-right m-r-3"
+                                           asp-controller="BuyGood"
+                                           asp-action="GetGoodById"
+                                           asp-route-id="@Model.Id">
+                                            <em class="fa fa-eye"></em>&nbsp;@Localizer["Preview"].Value
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <link href="~/lib/jquery.steps/demo/css/jquery.steps.css" rel="stylesheet" />
+    <script src="~/lib/jquery.steps/build/jquery.steps.js"></script>
+    <script>
+        function GoodViewModel() {
+            var self = this;
+            var serviceProxy = new ServiceProxy();
+            const sizeLimit = 500 * 1024;
+            const goodsUrl = '/api/goods';
+            self.buttonEnabled = ko.observable(true);
+
+            serviceProxy.getJsonResult(goodsUrl + '/apiBaseUrl',
+                null,
+                function(result) {
+                    if (result.error) {
+                        bootstrapError(result.error);
+                    } else {
+                        var imagePath = `${result.data}/@Model.ImagePath`;
+                        $('#imageSize').attr('src', imagePath);
+                    }
+                });
+
+            self.submitForm = function(formElement) {
+                if ($(formElement).valid()) {
+                    var formData = serializeFormToJson();
+                    if (formData != null)
+                        performSave(formData);
+                } else {
+                    notifyError("@Html.Raw(Localizer["Fill all fields"].Value)");
+                }
+            }
+
+            function performSave(data) {
+                let goodId = parseInt($('.good-id').val());
+
+                if (isNaN(goodId)) return;
+
+                if (goodId !== 0) {
+                    sendPutRequest(data, goodsUrl);
+                } else {
+                    buttonEnabledState(false);
+                    sendPostRequest(data, goodsUrl);
+                }
+            }
+
+            function serializeFormToJson() {
+                var serializeFormDate = $("form").serializeArray();
+                var formData = new FormData();
+
+                var files = $('#fileUpload').get(0).files;
+
+                if (files[0] !== undefined && files[0].size > sizeLimit) {
+                    bootstrapError("@Localizer["The upload file is larger than 500 KB"]");
+                    return null;
+                }
+
+                if (files.length > 0) {
+                    formData.append("Image", files[0]);
+                }
+
+                serializeFormDate.forEach(function(obj) {
+                    formData.append(obj.name, obj.value);
+                });
+
+                return formData;
+            }
+
+            function notifyError(result) {
+                if (typeof result === 'string') {
+                    bootstrapError(result);
+                } else if (Array.isArray(result.responseJSON.errors)) {
+                    result.responseJSON.errors.forEach(function(error) {
+                        bootstrapError(error);
+                    });
+                } else {
+                    bootstrapError(result.responseJSON.error);
+                }
+            }
+
+            function sendPutRequest(data, url) {
+                serviceProxy.putMultipartResult(url,
+                    data,
+                    function(result) {
+                        bootstrapSuccess('@Html.Raw(Localizer["Editing"].Value)',
+                            '@Html.Raw(Localizer["Good information successfully updated"].Value)');
+                    },
+                    function(error) {
+                        notifyError(error);
+                    });
+            }
+
+            function sendPostRequest(data, url) {
+                serviceProxy.postMultipartResult(url,
+                    data,
+                    function(result) {
+                        bootstrapSuccess('@Html.Raw(Localizer["Saving"].Value)',
+                            '@Html.Raw(Localizer["Good information successfully saved"].Value)');
+                        $(".good-id").val(`${result}`);
+                        $("#form-title").html('@Localizer["Edit Good"].Value');
+                        buttonEnabledState(true);
+                    },
+                    function(error) {
+                        notifyError(error);
+                        buttonEnabledState(true);
+                    });
+            }
+
+            function buttonEnabledState(isEnabled) {
+                self.buttonEnabled(isEnabled);
+            }
+        };
+
+        var goodViewModel = new GoodViewModel();
+        ko.applyBindings(goodViewModel);
+
+        window.onload = function() {
+           setImageSize();
+        };
+
+        var $window = $(window);
+        $window.resize(function () {
+            setImageSize();
+        });
+
+        $("#good-form-tabs").steps({
+            headerTag: "h3",
+            bodyTag: "section",
+            transitionEffect: "fade",
+            enableFinishButton: false,
+            enablePagination: false,
+            enableAllSteps: true,
+            titleTemplate: "#title#",
+            cssClass: "tabcontrol"
+        });
+
+        function setImageSize() {
+            let inputWidth = $('#Name').outerWidth();
+            let height = inputWidth / 16 * 9;
+            $('.img-thumbnail').css({'height' : height + 'px'});
+        }
+    </script>
+}

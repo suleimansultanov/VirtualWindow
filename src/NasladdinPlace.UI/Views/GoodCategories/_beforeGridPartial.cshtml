@@ -1,0 +1,221 @@
+﻿@using NasladdinPlace.UI.ViewModels.Base
+@using Microsoft.AspNetCore.Mvc.Localization
+@using NasladdinPlace.UI.Helpers
+@using NasladdinPlace.UI.ViewModels.GoodCategories
+@model UniReferenceViewModel<BaseViewModel>
+@inject IViewLocalizer Localizer
+
+@{
+    var saveButton = Localizer["Save"].Value;
+    var cancel = Localizer["Cancel"].Value;
+    var formRenderer = new FormRendererHelper<GoodCategoryViewModel>();
+}
+
+<div class="modal" id="add-edit-good-category-modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content animated fadeIn">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 data-bind="text: modalTitle"></h4>
+            </div>
+            <form data-ajax="true" class="form-horizontal" enctype="multipart/form-data">
+                <div class="modal-body">
+                    <div class="form-group row">
+                        <label class="col-lg-12">@Html.RenderDisplay(formRenderer.Get(f => f.Name))</label>
+                        <div class="col-lg-12">@await Html.RenderControlAsync(formRenderer.Get(f => f.Name))</div>
+                    </div>
+                    <div class="form-group row">
+
+                        <label class="col-lg-12">@Html.RenderDisplay(formRenderer.Get(f => f.ImagePath))</label>
+                        <div class="col-lg-12 flex-div">
+                            <div class="width-100 img-thumbnail text-center">
+                                <!-- ko if: image -->
+                                <img alt="Good category image" data-bind="attr:{src: ImagePath}" />
+                                <!-- /ko -->
+                                <!-- ko ifnot: image -->
+                                <img alt="Good category image" data-bind="attr:{src: defaultImagePath}" />
+                                <!-- /ko -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-lg-12">
+                            <input class="form-control" type="file" id="fileUpload" name="fileUpload" accept="image/x-png,image/jpg,image/jpeg,image/webp" />
+                        </div>
+                    </div>
+                    <hr />
+                    <div class="form-group row text-center">
+                        <p>
+                            @Html.Raw(Localizer["Image specification description"].Value)
+                        </p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-white" data-dismiss="modal">@cancel</button>
+                    <button type="button" class="btn btn-primary" data-bind="click: save">@saveButton</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    window.getGridCustomHandler = function () {
+        ko.validation.init({
+                registerExtenders: true,
+                messagesOnModified: true,
+                insertMessages: true,
+                parseInputAttributes: true,
+                messageTemplate: null
+            },
+            true);
+
+        return new GridCustomHandler(
+            vm => {
+                vm.Name = ko.observable();
+                vm.Id = ko.observable();
+                vm.ImagePath = ko.observable();
+                vm.defaultImagePath = ko.observable();
+                vm.modalTitle = ko.observable();
+                vm.image = ko.observable();
+                vm.apiBaseUrl = ko.observable();
+
+                vm.validatedFields = ko.validatedObservable([
+                    vm.Name.extend({
+                        required: true
+                    })
+                ]);
+
+                const modalId = "#add-edit-good-category-modal";
+                const url = '/api/goodCategories';
+                const sizeLimit = 500 * 1024;
+            
+                vm.serviceProxy.getJsonResult(url,
+                    {},
+                    function (result) {
+                        if (result.error) {
+                            bootstrapError(result.error);
+                        } else {
+                            vm.apiBaseUrl(result.data);
+                        }
+                    });
+
+                vm.serviceProxy.getJsonResult(url + "/defaultImage",
+                    {},
+                    function (result) {
+                        if (result.error) {
+                            bootstrapError(result.error);
+                        } else {
+                            vm.defaultImagePath(`${vm.apiBaseUrl()}/${result.data}`);
+                        }
+                    });
+
+                vm.add = function () {
+                    document.getElementById("fileUpload").value = "";
+                    clearNewItem();
+                    vm.modalTitle('@Html.Raw(Localizer["AddTitle"].Value)');
+                    $(modalId).modal();
+                    setImageSize();
+                }
+
+                vm.edit = function (item) {
+                    document.getElementById("fileUpload").value = "";
+                    vm.Name(item.Name());
+                    vm.Id(item.Id());
+
+                    if (item.ImagePath() == null) {
+                        vm.image(false);
+                    } else {
+                        vm.ImagePath(`${vm.apiBaseUrl()}/${item.ImagePath()}`);
+                        vm.image(true);
+                    }
+                  
+                    vm.modalTitle('@Html.Raw(Localizer["EditTitle"].Value)');
+
+                    $(modalId).modal();
+                    setImageSize();
+                }
+
+                vm.save = function () {
+                    bootstrapConfirmSave('@Html.Raw(Localizer["Attention"].Value)',
+                                     '@Html.Raw(Localizer["Confirmation message"].Value)', performSave);
+                }
+
+                function performSave() {
+                    if (vm.validatedFields.isValid()) {
+                        if (vm.Id() == null) {
+                            let formData = getFormData();
+                            vm.serviceProxy.postMultipartResult(url,
+                                formData,
+                                function(result) {
+                                    if (result.error) {
+                                        bootstrapError(result.error);
+                                    } else {
+                                        bootstrapSuccess("@Localizer["Saving"].Value",
+                                            "@Localizer["Good category successfully modified"].Value");
+                                        $(modalId).modal('toggle');
+                                        vm.refresh();
+                                    }
+                                });
+
+                        } else {
+                            let formData = getFormData();
+                            vm.serviceProxy.putMultipartResult(url,
+                                formData,
+                                function(result) {
+                                    if (result.error) {
+                                        bootstrapError(result.error);
+                                    } else {
+                                        bootstrapSuccess("@Localizer["Saving"].Value",
+                                            "@Localizer["Good category successfully modified"].Value");
+                                        $(modalId).modal('toggle');
+                                        vm.refresh();
+                                    }
+                                });
+                        }
+                    } else {
+                        bootstrapError('@Localizer["Fill all fields"].Value');
+                    }
+                }
+
+                function getFormData() {
+                    var formData = new FormData();
+                    var files = $('#fileUpload').get(0).files;
+
+                    if (files[0] !== undefined && files[0].size > sizeLimit) {
+                        bootstrapError("@Localizer["The upload file is larger than 500 KB"]");
+                        return formData;
+                    }
+
+                    if (files.length > 0) {
+                        formData.append("Image", files[0]);
+                    }
+
+                    formData.append("Name", vm.Name());
+                    formData.append("Id", vm.Id());
+
+                    return formData;
+                }
+
+                function clearNewItem() {
+                    vm.Id(null);
+                    vm.Name(null);
+                    vm.ImagePath(null);
+                    vm.image(false);
+                }
+
+                function setImageSize() {
+                    let inputWidth = $('#fileUpload').outerWidth();
+                    let height = inputWidth / 16 * 9;
+                    $('.img-thumbnail').css({'height' : height + 'px'});
+                }
+            });
+    };
+
+    var $window = $(window);
+    $window.resize(function () {
+        let inputWidth = $('#fileUpload').outerWidth();
+        let height = inputWidth / 16 * 9;
+        $('.img-thumbnail').css({'height' : height + 'px'});
+    });
+</script>

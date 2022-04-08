@@ -1,0 +1,89 @@
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@using NasladdinPlace.UI.Controllers
+@inject IViewLocalizer Localizer
+
+@model NasladdinPlace.UI.ViewModels.Shared.ImagesViewModel
+
+@{
+    ViewData["Title"] = @Localizer["Images"].Value;
+}
+
+<div class="row row-eq-height wrapper border-bottom white-bg p-sm">
+    <div class="col-xs-7 col-sm-10" style="font-size: 14px;">
+        <ol class="breadcrumb" style="padding-top: 5px;">
+            <li class="hidden-xs">
+                <a href="@Url.Action("All", "PointsOfSale")">@Localizer["Home"].Value</a>
+            </li>
+            <li class="hidden-xs">
+                <a asp-controller="PointsOfSale"
+                   asp-action="EditPos"
+                   asp-route-id="@Model.Resource.Id">
+                    @Localizer["Interface"].Value
+            </a>
+        </li>
+        <li class="active">
+            <strong>@ViewData["Title"]</strong>
+        </li>
+    </ol>
+</div>
+<div class="col-xs-5 col-sm-2" style="text-align: right;">
+    <a asp-controller="@Model.AdditionController.Replace("Controller", string.Empty)"
+       asp-action="@Model.AdditionAction"
+       asp-route-resourceId="@Model.Resource.Id"
+       class="btn btn-primary btn-outline"><em class="fa fa-plus"></em>&nbsp;@Localizer["Add"].Value</a>
+</div>
+</div>
+<div class="wrapper wrapper-content animated fadeIn">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-content">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-bordered table-hover" style="margin-bottom: 0" role="grid">
+                            <caption>&nbsp;</caption>
+                            <thead role="rowgroup">
+                                <tr role="row">
+                                    <th role="columnheader" id="number" class="text-center">@Localizer["#"].Value</th>
+                                    <th role="columnheader" id="image" class="text-center">@Localizer["Image"].Value</th>
+                                    <th role="columnheader" id="actions" class="text-center">@Localizer["Actions"].Value</th>
+                                </tr>
+                            </thead>
+                            <tbody role="rowgroup" id="goodImages">
+                                @{
+                                    if (Model.Images.Any())
+                                    {
+                                        var number = 0;
+                                        foreach (var image in Model.Images)
+                                        {
+                                            ++number;
+                                            <tr role="row">
+                                                <td role="gridcell">@number</td>
+                                                <td role="gridcell"><img src="@image.ImagePath" alt="Image" /></td>
+                                                <td role="gridcell">
+                                                    <div>
+                                                        <button data-goodImageId="@image.Id" class="btn btn-link @Model.DeletionSelector">@Localizer["Delete"].Value</button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <tr role="row"><td role="gridcell" class="text-center" colspan="3">@Localizer["No rows"].Value</td></tr>
+                                    }
+
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        GoodImagesController.init("#goodImages");
+    </script>
+}

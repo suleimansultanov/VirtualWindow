@@ -1,0 +1,64 @@
+@inject IViewLocalizer Localizer
+@using Microsoft.AspNetCore.Mvc.Localization
+@using NasladdinPlace.UI.ViewModels.Fiscalization
+@using Newtonsoft.Json
+@using Newtonsoft.Json.Serialization
+@model FiscalizationInfoViewModel
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <title>@Localizer["Fiscal check #"]@Model.FiscalizationNumber</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css"/>
+    <link rel="stylesheet" href="~/css/views/fiscalizationInfos/styles.css" asp-append-version="true"/>
+</head>
+<body>
+<div id="fiscalization-info-modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="container">
+        <div>
+            <div>
+                <div class="form-group row">
+                    <div>
+                        <div class="form-group row">
+                            <h1 class="col-lg-12 header" data-bind="text: '@Localizer["Fiscal check #"]' + fiscalizationNumber">@Localizer["Fiscal check #"]</h1>
+                            <div class="col-lg-12">
+                                <span class="printed-check" data-bind="html: documentInfo != null ? documentInfo.replaceAll('\n', '<br/>') : ''"></span>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div id="fiscalization-qr-code"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+
+<script type="text/javascript" src="~/js/knockout/knockout-3.4.0.js"></script>
+@(await Html.PartialAsync("_FiscalizationQrCodeRendererScripts"));
+<script>
+    String.prototype.replaceAll = function(search, replacement) {
+        const target = this;
+        return target.replace(new RegExp(search, 'g'), replacement);
+    };
+
+     @{
+        var serializerSettings = new JsonSerializerSettings
+        {
+            ContractResolver = new CamelCasePropertyNamesContractResolver()
+        };
+     }
+     
+     let fiscalizationInfo = @Html.Raw(JsonConvert.SerializeObject(Model, serializerSettings));
+     
+     ko.applyBindings(fiscalizationInfo, document.getElementById("#detailed-check"));
+
+     FiscalizationQrCodeRenderer.render("fiscalization-qr-code", fiscalizationInfo);
+</script>

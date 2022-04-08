@@ -1,0 +1,221 @@
+﻿<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="cache-control" content="no-cache">
+    <meta http-equiv="expires" content="0">
+    <meta http-equiv="pragma" content="no-cache">
+    <title>Локальная страница витрины - Nasladdin</title>
+    <link rel="stylesheet" href="reset.css">
+    <link rel="stylesheet" href="fonts.css">
+    <link rel="stylesheet" href="slick.css" />
+    <link rel="stylesheet" href="slick-theme.css" />
+    <link rel="stylesheet" href="style.css">
+    <script src="font-awesome-all.min.js"></script>
+</head>
+<body>
+    <div class="slider-wrapper">
+        <div class="try-connect" data-bind="style: { display: $root.isTryingToConnect() ? 'block' : 'none' }">
+            <div class="try-connect-page">
+                <div class="inner">
+                   <div class="pulse-icon">
+                     <div class="icon-wrap">
+                       <i class="icon fa fa-wifi" aria-hidden="true"></i>
+                     </div>
+                     <div class="elements">
+                       <div class="pulse-circle circle-outer"></div>
+                       <div class="pulse-circle circle-inner"></div>
+                       <div class="pulse pulse-1"></div>
+                       <div class="pulse pulse-2"></div>
+                       <div class="pulse pulse-3"></div>
+                     </div>
+                  </div>
+                  <h2 class="connection-font font-regular"><strong>Подключаюсь к серверу...</strong></h2>
+                </div>
+            </div>
+        </div>
+        <div class="check-network r-0 p-1" 
+        data-bind="style: { display: $root.isNeedToShowLegendText() ? 'inline' : 'grid' }, css: { 'try-connect-network': $root.state() == PosDisplayContentType.QR_CODE, 'l-0': $root.state() == PosDisplayContentType.DISCONNECT, 'pb-pr': $root.state() == PosDisplayContentType.DISCONNECT}">
+            <div class="vertical-align--bottom">
+                <div data-bind="style: { 'margin-top': $root.isNeedToShowLegendText() ? '0.3em' : '0' }, css: { 'large-rectangle': $root.isNeedToShowLegendText() }" 
+                    class="global small-rectangle"></div>
+                <span class="font-regular f-m m-b line-height" 
+                    data-bind="style: { display: $root.isNeedToShowLegendText() ? 'contents' : 'none' }">
+                    Global Net
+                </span>
+            </div>
+            <div class="vertical-align--bottom">
+                <div data-bind="style: { 'margin-top': $root.isNeedToShowLegendText() ? '0.3em' : '0' }, css: { 'large-rectangle': $root.isNeedToShowLegendText() }" 
+                    class="ru small-rectangle"></div>
+                <span class="font-regular f-m m-b line-height" 
+                    data-bind="style: { display: $root.isNeedToShowLegendText() ? 'contents' : 'none' }">
+                    Ru Net
+                </span>
+            </div>
+            <div class="vertical-align--bottom">
+                <div data-bind="style: { 'margin-top': $root.isNeedToShowLegendText() ? '0.3em' : '0' }, css: { 'large-rectangle': $root.isNeedToShowLegendText() }" 
+                    class="hosting small-rectangle"></div>
+                <span class="font-regular f-m m-b line-height" 
+                    data-bind="style: { display: $root.isNeedToShowLegendText() ? 'contents' : 'none' }">
+                    Hosting
+                </span>
+            </div>
+            <div class="vertical-align--bottom">
+                <div data-bind="style: { 'margin-top': $root.isNeedToShowLegendText() ? '0.3em' : '0' }, css: { 'large-rectangle': $root.isNeedToShowLegendText() }" 
+                    class="nasladdin small-rectangle"></div>
+                <span class="font-regular f-m m-b line-height" 
+                    data-bind="style: { display: $root.isNeedToShowLegendText() ? 'contents' : 'none' }">
+                    Nasladdin
+                </span>
+            </div>
+        </div>
+        <ul class="slider">
+            <li data-bind="css: {visible : $root.state() == PosDisplayContentType.QR_CODE}">
+                <div>
+                    <div class="p-l-b t-sm qr-code-page">
+                        <p class="font-regular f-m m-b"><span>Установите</span>
+                            <img class="logo-img" alt="logo" src="logo.svg"><img class="android-img" alt="android" src="android.svg"><img class="ios-img" alt="ios" src="ios.svg"><br>
+                            <span data-bind="style: { display: $root.isTryingToConnect() ? 'none' : 'block' }">отсканировав QR-код</span></p>          
+                        <div class="single-slide">
+                            <div class="slider-block">
+                                <div class="font-black f-b m-b"><span>Получите в подарок</span></div>
+                                <div class="font-black m-b text-red">
+                                    <span class="f-xl" style="display:inline; white-space:nowrap;">100</span>
+                                    <img class="ruble-img" alt="ruble" src="russian_ruble_symbol.svg">
+                                </div>
+                            </div>
+                            <div class="slider-block">
+                                <div class="font-black f-b text-red" style="line-height: 1.2; text-transform: uppercase;">
+                                    <span>Вечером Nasladdin</span><br>
+                                    <span>дарит скидки</span>
+                                </div>
+                                <div class="p-t-4">
+                                    <span class="font-regular f-m">C 18:00 до 06:00</span><br>
+                                    <span class="font-black f-m text-red">скидки 20%<span
+                                            class="font-regular text-black">.</span></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-t" data-bind="style: { display: $root.isTryingToConnect() ? 'none' : 'flex' }">
+                            <div class="qr-code">
+                                <div data-bind="qrCode:$root"></div>
+                            </div>
+                            <div class="p-l-3" style="align-self: center;">
+                                <div class="font-black f-b m-b">
+                                    <span>Откройте</span><br />
+                                    <span>витрину</span>
+                                </div>
+                                <div class="font-regular f-m m-b">
+                                    <span>отсканировав QR-код</span><br>    
+                                    <span>с приложения</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </li>
+            <li data-bind="css: {visible : $root.state() == PosDisplayContentType.INVENTORY}">
+                <div>
+                    <div class="timer-page">
+                        <span class="font-black f-b m-b">Спасибо за покупку!</span><br />
+                        <span class="font-black f-b m-b">Ждем вас снова&nbsp;
+                            <span>
+                                <em class="fas fa-clock icon-green"></em>
+                            </span>
+                        </span><br />
+                        <span class="font-regular f-m m-b">Витрина будет готова через:</span><br />
+                        <div id="inventory-countdown" data-bind="template: { name: 'count-down-timer', data: checkCaculationTimerInfo }"></div>
+                    </div>
+                </div>
+            </li>
+            <li data-bind="css: {visible : $root.state() == PosDisplayContentType.ACTIVE_PURCHASE}">
+                <div>
+                    <div class="hide-page">
+                        <span class="mb"><img class="logo-size" alt="logo" src="logo.svg"></span><br />
+                        <div class="font-regular f-b m-b">
+                            <em class="fas fa-info-circle icon-green"></em>&nbsp;<span>Важно!</span><br />
+                            <span>После покупки закройте</span><br />
+                            <span>двери используя&nbsp;<em class="fas fa-mobile-alt icon-green"></em></span><br />
+                            <span>или они закроются</span><br />
+                            <span>автоматически через:</span>
+                        </div>
+                        <div id="doors-automatic-closing-timer" data-bind="template: { name: 'count-down-timer', data: autoClosingDoorsTimerInfo }">
+                        </div>
+                    </div>
+                </div>
+            </li>
+            <li data-bind="css: {visible : $root.state() == PosDisplayContentType.DISCONNECT}">
+                <div>
+                    <div class="disconnect-page">
+                        <span class="f-xl m-b icon-green"><img class="disconnected-cloud" alt="logo" src="disconnected.svg"></span>
+                        <div class="network-error font-regular f-m m-b">
+                            <strong>
+                                <span class="large-error-text font-black m-b text-red extra-line-height">У меня проблема со связью</span>
+                            </strong>
+                        </div>
+                        <div class="net-cause font-regular f-m m-b">
+                            <strong>
+                                <span>Прошу прощения, но обслуживание<br />в данный момент недоступно</span><br />
+                                <span class="extra-line-height">Наши специалисты уже принимают меры</span>
+                            </strong>
+                        </div>
+                    </div>
+                </div>
+            </li>
+            <li data-bind="css: {visible : $root.state() == PosDisplayContentType.PURCHASES_RESTRICTED}">
+                <div>
+                    <div class="purchase-restricted-page">
+                        <strong>
+                            <span class="f-xl m-b icon-green"><img class="restricted-purchases-sign" alt="logo" src="restricted-purchases-sign.svg"></span><br />
+                            <span class="font-regular f-b m-b">Покупки временно запрещены администратором,</span><br />
+                            <span class="font-regular f-b m-b">приношу извинения за неудобства.</span>
+                        </strong>
+                    </div>
+                </div>
+            </li>
+        </ul>
+        </div>
+        <footer>
+            <div>
+                <ol class="cd-slider-navigation hide">
+                    <li><a data-bind="css: {selected : $root.state() == PosDisplayContentType.QR_CODE}, click: changeState.bind(this, PosDisplayContentType.QR_CODE, true)"><em
+                            class="fas fa-shopping-cart icon-white"></em></a></li>
+                    <li><a data-bind="css: {selected : $root.state() == PosDisplayContentType.ACTIVE_PURCHASE}, click: changeState.bind(this, PosDisplayContentType.ACTIVE_PURCHASE, true)"><em
+                            class="fas fa-door-open icon-white"></em></a></li>
+                    <li><a data-bind="css: {selected : $root.state() == PosDisplayContentType.INVENTORY}, click: changeState.bind(this, PosDisplayContentType.INVENTORY, true)"><em
+                            class="fas fa-clipboard-check icon-white"></em></a></li>
+                    <li><a data-bind="css: {selected : $root.state() == PosDisplayContentType.DISCONNECT}, click: changeState.bind(this, PosDisplayContentType.DISCONNECT, true)"><em
+                            class="fas fa-dizzy icon-white"></em></a></li>
+                    <li><a data-bind="css: {selected : $root.state() == PosDisplayContentType.PURCHASES_RESTRICTED}, click: changeState.bind(this, PosDisplayContentType.PURCHASES_RESTRICTED, true)"><em
+                            class="fas fa-stop icon-white"></em></a></li>
+                </ol>
+            </div>
+        </footer>
+        <script type="text/html" id="count-down-timer">
+            <div class="timer">
+                <div class="countdown" data-bind="css: { 'countdown--ended': isTimerCompleted() }">
+                    <div class="countdown__fill" data-bind="style: { height: progressIndicatorHeight() }"></div>
+                    <div class="countdown__digit" data-bind="text: detailedRemainingTime()"></div>
+                </div>
+            </div>
+        </script>
+        <script src="/Urls/GenerateUrlsJsFile"></script>
+        <script src="jquery-3.4.1.min.js"></script>
+        <script src="qrcode.min.js"></script>
+        <script src="slick.min.js"></script>
+        <script src="knockout-3.5.0.js"></script>
+        <script src="connectionSettings.js"></script>
+        <script src="posDisplayContentType.js"></script>
+        <script src="qrCodeRenderer.js"></script>
+        <script src="posIdQueryStringReader.js"></script>
+        <script src="connectionConstants.js"></script>
+        <script src="countdownTimerViewModel.js"></script>
+        <script src="webSocketClient.js"></script>
+        <script src="sliderRenderer.js"></script>
+        <script src="posLocalPageViewModel.js"></script>
+        <script src="localTimerManager.js"></script>
+        <script src="pingViewModel.js"></script>
+        <script src="main.js"></script>
+</body>
+</html>

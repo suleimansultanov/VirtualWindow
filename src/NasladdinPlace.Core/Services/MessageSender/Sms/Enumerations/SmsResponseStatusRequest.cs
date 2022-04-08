@@ -1,0 +1,42 @@
+﻿namespace NasladdinPlace.Core.Services.MessageSender.Sms.Enumerations
+{
+    public enum SmsResponseStatusRequest
+    {
+        MessageNotFoundOrError = -1,
+        Queued = 100,
+        SendingToTheOperator = 101,
+        SendingToTheRecepient = 102,
+        MessageRecieved = 103,
+        FailedOutOfTime = 104,
+        CancelledByOperator = 105,
+        PhoneMalfunction = 106,
+        ReasonUnknown = 107,
+        MessageDeclined = 108,
+        WrongApiId = 200,
+        OutOfMoney = 201,
+        BadRecipient = 202,
+        MessageTextNotSpecified = 203,
+        BadSender = 204,
+        LongMessage = 205,
+        DayMessageLimit = 206,
+        CantSendToThisNumber = 207,
+        WrongTime = 208,
+        BlacklistedRecepient = 209,
+        ShouldUsePostMethod = 210,
+        MethodNotFound = 211,
+        IncorrectEncodingUtf8 = 212,
+        OutOfRangeRecipientList = 213,
+        ServiceIsUnavailable = 220,
+        DayMessageLimitToNumber = 230,
+        ExceededLimitRepeatedSmsToNumberPerMinute = 231,
+        ExceededLimitRepeatedSmsToNumberPerDay = 232,
+        ExceededLimitRepeatedSmsToNumber = 233,
+        WrongToken = 300,
+        WrongLoginOrPassword = 301,
+        AccountNotVerified = 302,
+        IncorrectVerificationCode = 303,
+        SentManyVerificationCodes = 304,
+        ManyIncorrectInputAttemptsCodes = 305,
+        ServerError = 500
+    }
+}

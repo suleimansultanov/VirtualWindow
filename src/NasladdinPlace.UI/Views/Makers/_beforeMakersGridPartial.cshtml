@@ -1,0 +1,150 @@
+﻿@using NasladdinPlace.UI.ViewModels.Base
+@using Microsoft.AspNetCore.Mvc.Localization
+@using NasladdinPlace.UI.Helpers
+@using NasladdinPlace.UI.ViewModels.Makers
+@model UniReferenceViewModel<BaseViewModel>
+@inject IViewLocalizer Localizer
+
+@{
+    var saveButton = Localizer["Save"].Value;
+    var cancel = Localizer["Cancel"].Value;
+    var formRenderer = new FormRendererHelper<MakerViewModel>();
+}
+
+<div class="modal" id="add-edit-maker-modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content animated fadeIn">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 data-bind="text: modalTitle"></h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group row">
+                    <label class="col-lg-12">@Html.RenderDisplay(formRenderer.Get(f => f.Name))</label>
+                    <div class="col-lg-12">@await Html.RenderControlAsync(formRenderer.Get(f => f.Name))</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-white" data-dismiss="modal">@cancel</button>
+                <button type="button" class="btn btn-primary" data-bind="click: save">@saveButton</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    window.getGridCustomHandler = function () {
+        ko.validation.init({
+                registerExtenders: true,
+                messagesOnModified: true,
+                insertMessages: true,
+                parseInputAttributes: true,
+                messageTemplate: null
+            },
+            true);
+
+        return new GridCustomHandler(
+            vm => {
+                vm.Name = ko.observable();
+                vm.Id = ko.observable();
+                vm.modalTitle = ko.observable();
+
+                vm.validatedFields = ko.validatedObservable([
+                    vm.Name.extend({
+                        required: true
+                    })
+                ]);
+
+                const modalId = "#add-edit-maker-modal";
+
+                vm.add = function () {
+                    clearNewItem();
+                    vm.modalTitle('@Html.Raw(Localizer["AddTitle"].Value)');
+                    $(modalId).modal();
+                }
+
+                vm.edit = function (item) {
+                    vm.Name(item.Name());
+                    vm.Id(item.Id());
+
+                    vm.modalTitle('@Html.Raw(Localizer["EditTitle"].Value)');
+
+                    $(modalId).modal();
+                }
+
+                vm.save = function () {
+                    bootstrapConfirmSave('@Html.Raw(Localizer["Attention"].Value)',
+                                     '@Html.Raw(Localizer["Confirmation message"].Value)', performSave);
+                }
+
+                vm.remove = function(item) {
+                    bootstrapConfirmDelete(
+                        '@Html.Raw(Localizer["Attention"].Value)',
+                        `@Html.Raw(Localizer["Confirming delete message"].Value) — ${item.Name()}?`,
+                        function() {
+                            const url = '/api/makers/' + item.Id();
+
+                            vm.serviceProxy.deleteJsonResult(url,
+                                {},
+                                function (result) {
+                                    if (result.error) {
+                                        bootstrapError(result.error);
+                                    } else {
+                                        bootstrapSuccess('@Html.Raw(Localizer["Removing"].Value)',
+                                            '@Html.Raw(Localizer["Maker successfully removed"].Value)');
+                                        vm.refresh();
+                                    }
+                                });
+                        });
+                }
+                function performSave() {
+                    if (vm.validatedFields.isValid()) {
+                        const url = '/api/makers';
+
+                        if (vm.Id() == null) {
+                            const data = {
+                                Name: vm.Name()
+                            };
+                            vm.serviceProxy.postJsonResult(url,
+                                data,
+                                function(result) {
+                                    if (result.error) {
+                                        bootstrapError(result.error);
+                                    } else {
+                                        bootstrapSuccess("@Localizer["Saving"].Value",
+                                            "@Localizer["Maker successfully modified"].Value");
+                                        $(modalId).modal('toggle');
+                                        vm.refresh();
+                                    }
+                                });
+                        } else {
+                            const data = {
+                                Name: vm.Name(),
+                                Id: vm.Id()
+                            };
+                            vm.serviceProxy.putJsonResult(url,
+                                data,
+                                function(result) {
+                                    if (result.error) {
+                                        bootstrapError(result.error);
+                                    } else {
+                                        bootstrapSuccess('@Localizer["Saving"].Value',
+                                            "@Localizer["Maker successfully modified"].Value");
+                                        $(modalId).modal('toggle');
+                                        vm.refresh();
+                                    }
+                                });
+                        }
+                    } else {
+                        bootstrapError('@Localizer["Fill all fields"].Value');
+                    }
+                }
+
+                function clearNewItem() {
+                    vm.Id(null);
+                    vm.Name(null);
+                }
+
+            });
+    };
+</script>

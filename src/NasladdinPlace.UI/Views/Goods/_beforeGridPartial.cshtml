@@ -1,0 +1,44 @@
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@using NasladdinPlace.UI.ViewModels.Base
+
+@model UniReferenceViewModel<BaseViewModel>
+
+@inject IViewLocalizer Localizer
+
+<script>
+    window.getGridCustomHandler = function() {
+        return new GridCustomHandler(
+            vm => {
+                vm.edit = function(item) {
+                    const url = `/Goods/EditGoodAsync/${item.Id()}`;
+                    $(location).attr('href', url);
+                }
+
+                vm.add = function(item) {
+                    const url = '/Goods/AddGoodAsync';
+                    $(location).attr('href', url);
+                }
+
+                vm.remove = function(item) {
+                    bootstrapConfirmDelete(
+                        '@Html.Raw(Localizer["Attention"].Value)',
+                        `@Html.Raw(Localizer["Confirming delete message"].Value) — ${item.Name()}?`,
+                        function() {
+                            const url = '/api/goods/' + item.Id();
+
+                            vm.serviceProxy.deleteJsonResult(url,
+                                {},
+                                function (result) {
+                                    if (result.error) {
+                                        bootstrapError(result.error);
+                                    } else {
+                                        bootstrapSuccess('@Html.Raw(Localizer["Removing"].Value)',
+                                            '@Html.Raw(Localizer["Good successfully removed"].Value)');
+                                        vm.refresh();
+                                    }
+                                });
+                        });
+                }
+            });
+    };
+</script>

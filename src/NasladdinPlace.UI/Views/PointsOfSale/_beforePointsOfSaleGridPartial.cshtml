@@ -1,0 +1,189 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@using NasladdinPlace.Core.Enums
+@using NasladdinPlace.UI.ViewModels.PointsOfSale
+@using NasladdinPlace.UI.ViewModels.Base
+@using NasladdinPlace.Utilities.EnumHelpers
+@model UniReferenceViewModel<BaseViewModel>
+
+@inject IViewLocalizer Localizer
+
+@{
+    var savingVersionSuccessMessage = Localizer["The version has been saved successfully!"].Value;
+    var savingVersionFailureMessage = Localizer["An error occured during update of the version."].Value;
+}
+    <div class="btn-group">
+        @{
+            var isNotDeactivatedFilterName = nameof(PosViewModel.IsNotDeactivated);
+        }
+        <!-- ko with: Filter -->
+        <!-- ko if: @(isNotDeactivatedFilterName).Value() -->
+        <button class="btn btn-sm btn-primary">@Localizer["Activated pos"].Value
+        </button>
+        <button class="btn btn-sm btn-white" data-bind="click: function() { @(isNotDeactivatedFilterName).Value(null); $root.applyFilter(); }">@Localizer["All pos"].Value</button>
+        <!-- /ko -->
+        <!-- ko ifnot: @(isNotDeactivatedFilterName).Value() -->
+        <button class="btn btn-sm btn-white" data-bind="click: function() { @(isNotDeactivatedFilterName).Value(true); $root.applyFilter(); }">@Localizer["Activated pos"].Value</button>
+        <button class="btn btn-sm btn-primary">@Localizer["All pos"].Value</button>
+        <!-- /ko -->
+        <!-- /ko -->
+    </div>
+<div class="modal" id="pointsOfSaleVersionFormModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- ko with: $data -->
+    <div class="modal-dialog">
+        <div class="modal-content animated fadeIn">
+            <div class="modal-header">
+                <button type="button"
+                        class="close"
+                        data-dismiss="modal"
+                        data-bind="click: $data.revertToOldValue">
+                    <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+                </button>
+                <h4>@Localizer["Edit version"].Value</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group row">
+                    <label class="col-lg-12">@Localizer["Version"].Value</label>
+                    <div class="col-lg-12">
+                        <input class="form-control input-sm" type="text" data-bind="textInput: $data.value" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button"
+                            class="btn btn-white"
+                            data-dismiss="modal"
+                            data-bind="click: $data.revertToOldValue">
+                        @Localizer["Cancel"].Value
+                    </button>
+                    <button type="button"
+                            class="btn btn-primary"
+                            data-bind="click: $data.saveValue">
+                        @Localizer["Save"].Value
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /ko -->
+</div>
+
+<script>
+
+    window.getGridCustomHandler = function () {
+        return new GridCustomHandler(
+            vm => {
+                vm.Filter.IsNotDeactivated.Value(true);
+
+                vm.edit = function(item) {
+                        const url = `/PointsOfSale/EditPos/${item.Id()}`;
+                        $(location).attr('href', url);
+                },
+
+                vm.monitor = function(item) {
+                    const url = `/PointsOfSale/${item.Id()}/Monitoring`;
+                    $(location).attr('href', url);
+                },
+
+                vm.hasCustomTextColor = function (item) {
+                    switch (item.PosActivityStatus()) {
+                    case @((int)PosActivityStatus.Inactive):
+                    case @((int)PosActivityStatus.Test):
+                        return "rgba(0, 0, 0, 0.2)";
+                    default:
+                    case @((int)PosActivityStatus.Active):
+                        return null;
+                    }
+                };
+            });
+    };
+
+    const showPointsOfSaleVersionEditingModal = function() {
+        $("#pointsOfSaleVersionFormModal").modal('show');
+    }
+
+    const hidePointsOfSaleVersionEditingModal = function() {
+        $("#pointsOfSaleVersionFormModal").modal('hide');
+    }
+
+    const editVersion = function() {
+        showPointsOfSaleVersionEditingModal();
+    }
+
+    $(document).ready(function() {
+        const pointsOfSaleVersionUrl = 'api/pointsOfSale/version';
+        const httpRequestsService = HttpRequestsService;
+
+        const sendPointsOfSaleVersionUpdateRequest = function(version, successAction, errorAction) {
+            const successHandler = function() {
+                successAction();
+                hidePointsOfSaleVersionEditingModal();
+                bootstrapSuccess("@savingVersionSuccessMessage");
+            }
+
+            const failureHandler = function() {
+                errorAction();
+                hidePointsOfSaleVersionEditingModal();
+                bootstrapError("@savingVersionFailureMessage");
+            }
+
+            const requestBody = {
+                value: version
+            };
+
+            httpRequestsService.performPutRequest(
+                pointsOfSaleVersionUrl,
+                requestBody,
+                successHandler,
+                failureHandler
+            );
+        }
+
+        const VersionViewModel = function() {
+            const self = this;
+
+            self.oldValue = "";
+            self.value = ko.observable("");
+
+            self.saveValue = function() {
+                sendPointsOfSaleVersionUpdateRequest(
+                    self.value(),
+                    self.updateOldValue,
+                    self.revertToOldValue
+                );
+            };
+
+            self.revertToOldValue = function() {
+                self.value(self.oldValue);
+            }
+
+            self.updateOldValue = function() {
+                self.oldValue = self.value();
+            }
+        }
+
+        const versionViewModel = new VersionViewModel();
+
+        const pointsOfSaleVersionFormNode = document.getElementById("pointsOfSaleVersionFormModal");
+        ko.cleanNode(pointsOfSaleVersionFormNode);
+        ko.applyBindings(versionViewModel, pointsOfSaleVersionFormNode);
+
+        const getPointsOfSaleVersionFromApi = function() {
+            const successHandler = function(pointsOfSaleVersion) {
+                const value = pointsOfSaleVersion.value;
+                versionViewModel.value(value);
+                versionViewModel.updateOldValue();
+            }
+
+            const failureHandler = function() {
+                setTimeout(getPointsOfSaleVersionFromApi, 2000);
+            }
+
+            httpRequestsService.performGetRequest(
+                pointsOfSaleVersionUrl,
+                successHandler,
+                failureHandler
+            );
+        }
+
+        getPointsOfSaleVersionFromApi();
+    });
+</script>

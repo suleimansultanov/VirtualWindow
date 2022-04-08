@@ -1,0 +1,268 @@
+﻿<div class="modal" tabindex="-1" role="dialog" id="modal-text-reference" data-bind="attr: {name: sourceName }">
+    <div class="modal-dialog" style="max-width: 800px; padding: 10px;">
+        <div class="modal-content">
+            <div class="color-line"></div>
+            <div class="modal-header">
+                <h4 class="modal-title m-b-sm" data-bind="text:title"></h4>
+                <form id="text-reference-form-filter">
+                    <div id="text-reference-div-filter">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-body" style="height: 400px; padding: 5px 15px;">
+                <div class="ibox-content" id="text-reference-container" style="padding: 0px; border: none;">
+                    <div class="sk-spinner sk-spinner-double-bounce">
+                        <div class="sk-double-bounce1"></div>
+                        <div class="sk-double-bounce2"></div>
+                    </div>
+
+                    <div class="table-responsive" style="max-height: 390px;">
+                        <table class="table table-striped table-bordered complex-table table-hover" style="background-color: #fefefe;" role="grid">
+                            <caption>&nbsp;</caption>
+                            <thead role="rowgroup">
+                                <tr role="row" id="headers" data-bind="foreach: headers">
+                                    <th role="columnheader" id="headerCell" class="width-1-percent" data-bind="text:$data"></th>
+                                </tr>
+                            </thead>
+                            <tbody role="rowgroup" data-bind="foreach: items">
+                                <tr role="row" data-expandable="true" data-bind="selectedItem: $root.selectedRow, event: { dblclick: $root.accept }, foreach: $data">
+                                    <!-- ko if: $index() < $root.headers().length -->
+                                    <td role="columnheader" class="align-left" data-bind="text:$data"></td>
+                                    <!-- /ko -->
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>                
+            </div>
+            <div class="modal-footer">
+                <div data-bind="if:isPagination">
+                    <pagination style="margin-top: -19px !important; height: 0px !important;" class="col-md-8" params="data: pageCount, page: page, pageSize: pageSize, pagesCount: 5, change: $root.changePage"></pagination>
+                </div>
+                <button type="button" class="btn btn-default" data-bind="click:cancel">Закрыть</button>
+                <button type="button" class="btn btn-primary" data-bind="click:accept, enable: selectedRow() != null ">Выбрать</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/lib/jquery/dist/jquery.js"></script>
+<script type="text/javascript">
+    var textReferenceFilterControl = {
+        currentFilter: null,
+        viewModel: {},
+        modalBaseFiltersModal: "#reference-filter-modal",
+        modalBaseDetailsModal: "#reference-details-modal",
+        modalTextReferenceId: "modal-text-reference",
+        modalTextReference: "#modal-text-reference",
+        filterForm: "#text-reference-form-filter",
+        filterDiv: "#text-reference-div-filter",
+        filterUrl: '@Url.Action("GetFilter", "CommonReference", new {area = ""})',
+        url: '@Url.Action("", "", new {area = ""})'
+    };
+    $(document).ready(function () {
+        koRegisterPaginationComponent();
+
+        var serviceProxy = new ServiceProxy(),
+            textReferenceUrl = '@Url.Action("GetTextReferenceSource", "CommonReference", new {area = ""})',
+
+            vm = textReferenceFilterControl.viewModel,
+            id = textReferenceFilterControl.modalTextReferenceId,
+            qid = textReferenceFilterControl.modalTextReference,
+            mid = qid + ' .mask';
+
+        vm.contextData = null;
+        vm.keys = [];
+        vm.sourceName = ko.observable(null);
+        vm.selectedRow = ko.observable();
+        vm.title = ko.observable();
+        vm.filter = ko.observable();
+        vm.items = ko.observableArray();
+        vm.headers = ko.observableArray();
+
+        vm.pageCount = ko.observable(0);
+        vm.page = ko.observable(1);
+        vm.pageSize = ko.observable(10);
+        vm.isPagination = ko.observable(false);
+
+        vm.cancel = function() {
+            jQuery(qid).modal('hide');
+        }
+        vm.accept = function() {
+            var data = vm.keys.length === 1
+                ? vm.selectedRow()[vm.keys[0]]
+                : vm.selectedRow();
+
+            jQuery(qid).trigger("dialogCallBack", [data]);
+            jQuery(qid).modal('hide');
+        }
+        vm.clear = function() {
+            vm.items([]);
+        }
+        vm.showMask = function() {
+            $('#text-reference-container').addClass('sk-loading');  
+        }
+        vm.hideMask = function() {
+            setTimeout(function () {
+                $('#text-reference-container').removeClass('sk-loading');
+            }, 300);
+        }
+        vm.changePage = function(page) {
+            if (vm.currentPage !== page) {
+                vm.currentPage = page;
+                vm.load();
+            }
+        }
+        vm.load = function() {
+            vm.selectedRow(null);
+            const filter = vm.filter();
+            if (vm.isPagination()) {
+                filter.PageCount = vm.pageCount();
+                filter.Page = vm.currentPage || 1;
+                filter.PageSize = vm.pageSize();
+            }
+            const dataFilter = JSON.stringify(filter);
+            serviceProxy.postJsonResultCustomMask(
+                function() {
+                    vm.showMask();
+                },
+                function() {
+                    vm.hideMask();
+                },
+                textReferenceUrl,
+                { source: vm.sourceName(), filter: dataFilter, contextData: JSON.stringify(vm.contextData) },
+                function(result) {
+                    if (result.error) {
+                        bootstrapErrorWithTitle('Загрузка данных', result.error);
+                    } else {
+                        var mappedRootObject = ko.mapping.fromJS(result.data);
+                        vm.headers(mappedRootObject.Headers());
+                        vm.items(mappedRootObject.Table());
+                        vm.keys = result.data.Keys;
+
+                        if (result.data.PageCount) {
+                            vm.pageCount(result.data.PageCount);
+                            vm.page(result.data.Page);
+                            vm.pageSize(result.data.PageSize);
+                            vm.isPagination(true);
+                        }
+
+                    }
+                });
+        }
+        ko.applyBindings(vm, document.getElementById(id));
+
+        jQuery(textReferenceFilterControl.filterForm).submit(function(event) {
+            event.preventDefault();
+            var data = $(textReferenceFilterControl.filterForm).serializeObject();
+            vm.filter(data);
+
+            if (vm.isPagination())
+                vm.page(1);
+
+            vm.load();
+        });
+
+        jQuery(textReferenceFilterControl.modalTextReference).on('show.bs.modal',
+            function () {
+                $(this).find('input').val('');
+            });
+
+        jQuery(textReferenceFilterControl.modalTextReference).on('hide.bs.modal',
+            function() {
+                jQuery(textReferenceFilterControl.modalTextReference).unbind('dialogCallBack');                
+            });
+
+        jQuery(textReferenceFilterControl.modalTextReference).on('hidden.bs.modal',
+            function () {
+                jQuery(textReferenceFilterControl.modalBaseFiltersModal).modal('toggle');
+                jQuery(textReferenceFilterControl.modalBaseFiltersModal).modal('toggle');
+
+                jQuery(textReferenceFilterControl.modalBaseDetailsModal).modal('toggle');
+                jQuery(textReferenceFilterControl.modalBaseDetailsModal).modal('toggle');
+            });
+
+        $.fn.serializeObject = function()
+        {
+            var o = {};
+            var a = this.serializeArray();
+            $.each(a, function() {
+                if (o[this.name]) {
+                    if (!o[this.name].push) {
+                        o[this.name] = [o[this.name]];
+                    }
+                    o[this.name].push(this.value || '');
+                } else {
+                    o[this.name] = this.value || '';
+                }
+            });
+            return o;
+        };
+    });
+
+    function showTextReference(sourceName,
+        sourceTitle,
+        filterPartialName,
+        isLargeData,
+        callback,
+        contextData,
+        data) {
+        var vm = textReferenceFilterControl.viewModel;
+        vm.clear();
+        vm.sourceName(sourceName);
+        vm.title(sourceTitle);
+        vm.filter("");
+        vm.headers(null);
+        vm.items(null);
+        vm.selectedRow(null);
+        vm.contextData = contextData;
+        vm.isPagination(false);
+        vm.data = data;
+        vm.url = textReferenceFilterControl.url;
+
+        jQuery(textReferenceFilterControl.modalTextReference).modal();
+
+
+        if (filterPartialName !== "") {
+            if (filterPartialName === textReferenceFilterControl.currentFilter &&
+                contextData === textReferenceFilterControl.currentContextData) {
+                if (!isLargeData) {
+                    jQuery(textReferenceFilterControl.filterForm).submit();
+                }
+            } else {
+                vm.showMask();
+                textReferenceFilterControl.currentFilter = filterPartialName;
+                textReferenceFilterControl.currentContextData = contextData;
+                jQuery(textReferenceFilterControl.filterDiv).load(textReferenceFilterControl.filterUrl,
+                    { filter: filterPartialName},
+                    function(response, status, xhr) {
+                        vm.hideMask();
+                        if (status === "error") {
+                            let result = {};
+                            try {
+                                result = JSON.parse(response);
+                            } catch (e) {
+
+                            }
+                            if (result.unauthorized) {
+                                bootstrapWarning("Внимание", "Вы не авторизованы, необходимо войти в систему");
+                            }
+                        } else {
+                            if (!isLargeData) {
+                                jQuery(textReferenceFilterControl.filterForm).submit();
+                            }
+                        }
+                    });
+            }
+        } else {
+            vm.hideMask();
+            jQuery(textReferenceFilterControl.filterForm).submit();
+        }
+        jQuery(textReferenceFilterControl.modalTextReference).bind("dialogCallBack",
+            function(e, data) {
+                if (callback) callback(data);
+            });
+
+        jQuery(textReferenceFilterControl.filterForm).data("view-model", vm);
+    }
+</script>

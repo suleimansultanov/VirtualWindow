@@ -1,0 +1,253 @@
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@using NasladdinPlace.DAL.Constants
+@inject IViewLocalizer Localizer
+
+<div id="modal-container">
+    <partial name="_createUserPartial" />
+    <partial name="_editUserPartial" />
+    <partial name="_changeUserPasswordPartial" />
+</div>
+
+<script>
+window.getGridCustomHandler = function() {
+    ko.validation.init({
+            registerExtenders: true,
+            messagesOnModified: true,
+            insertMessages: true,
+            parseInputAttributes: true,
+            messageTemplate: null
+        },
+        true);
+
+    return new GridCustomHandler(
+        vm =>
+     {
+        const defaultRoleId = 1;
+        const usersUrl = '/api/users';
+        const rolesUrl = '/api/roles';
+
+        vm.Id = ko.observable();
+        vm.UserName = ko.observable();
+        vm.Email = ko.observable().extend({
+            required: true,
+            email: true
+        });
+        vm.PhoneNumber = ko.observable();
+        vm.Gender = ko.observable();
+        vm.Birthdate = ko.observable();
+        vm.Password = ko.observable().extend({
+            minLength: [6]
+        });
+        vm.PasswordConfirm = ko.observable().extend({
+            minLength: [6]
+        });
+        vm.NewPassword = ko.observable().extend({
+            minLength: [6]
+        });
+        vm.NewPasswordConfirmation = ko.observable().extend({
+            minLength: [6]
+        });
+        vm.Roles = ko.observableArray();
+        vm.SelectedRoles = ko.observableArray([defaultRoleId]);
+        vm.IsActive = ko.observable();
+        vm.pageGender = ko.computed(function() {
+            if (vm.Gender() == 1) {
+                return true;
+            }
+            return false;
+        });
+        vm.roles = ko.computed(function() {
+            getRoles(rolesUrl, vm.serviceProxy, vm.Roles);
+        });
+
+        vm.createValidatedFields = ko.validatedObservable([
+            vm.Email.extend({
+                required: true
+            }),
+            vm.Password.extend({
+                required: true
+            }),
+            vm.PasswordConfirm.extend({
+                required: true
+            })
+        ]);
+            
+        vm.validatedFields = ko.validatedObservable([
+            vm.Birthdate.extend({
+                required: true,
+                date: true
+            }),
+            vm.UserName.extend({
+                required: true
+            })
+        ]);
+
+        vm.changePasswordValidatedFields = ko.validatedObservable([
+            vm.NewPassword.extend({
+                required: true
+            }),
+            vm.NewPasswordConfirmation.extend({
+                required: true
+            })
+        ]);
+
+        var selectedItem = null;
+        
+        vm.edit = function (item) {
+            selectedItem = item;
+            vm.Id(item.Id());
+            vm.UserName(item.UserName());
+            vm.Email(item.Email());
+            vm.PhoneNumber(item.PhoneNumber());
+            vm.Gender(item.Gender());
+            vm.Birthdate(item.Birthdate());
+            if (item.SelectedRoles().length === 0)
+                vm.SelectedRoles([defaultRoleId]);
+            else
+                vm.SelectedRoles(item.SelectedRoles());
+            vm.IsActive(item.IsActive());
+
+            $("#edit-user-modal").modal();
+        }
+
+        vm.add = function(item) {
+            vm.Email(item.Email());
+            vm.Password(item.Password());
+            vm.PasswordConfirm(item.PasswordConfirm());
+            vm.SelectedRoles([defaultRoleId]);
+            vm.IsActive(false);
+
+            $("#add-user-modal").modal();
+        }
+
+        vm.changePassword = function (item) {
+            vm.Id(item.Id());
+            vm.Email(item.Email());
+            vm.NewPassword(item.NewPassword());
+            vm.NewPasswordConfirmation(item.NewPasswordConfirmation());
+
+            $('#change-user-password-modal').modal();
+        }
+
+        vm.addUserInfo = function () {
+            if (vm.createValidatedFields.isValid()) {
+                var data = {
+                    Email: vm.Email(),
+                    Password: vm.Password(),
+                    PasswordConfirm: vm.PasswordConfirm(),
+                    SelectedRoles: [vm.SelectedRoles()],
+                    IsActive: vm.IsActive()
+                };
+
+                vm.serviceProxy.postJsonResult(usersUrl,
+                    data,
+                    function() {
+                        bootstrapSuccess('@Html.Raw(Localizer["User successfully created"].Value)');
+                        $("#add-user-modal").modal('hide');
+                        vm.refresh();
+                    },
+                    function(error) {
+                        vm.refresh();
+                        notifyError(error);
+                    });
+            } else {
+                notifyError('@Html.Raw(Localizer["Fill all fields"].Value)');
+            }
+        }
+
+        vm.changeUserPassword = function () {
+            if (vm.changePasswordValidatedFields.isValid()) {
+                var data = {
+                    Id: vm.Id(),
+                    Email: vm.Email(),
+                    NewPassword: vm.NewPassword(),
+                    NewPasswordConfirmation: vm.NewPasswordConfirmation()
+                };
+
+                vm.serviceProxy.postJsonResult(`${usersUrl}/changePassword`,
+                    data,
+                    function() {
+                        bootstrapSuccess('@Html.Raw(Localizer["Password successfully changed"].Value)');
+                        $("#change-user-password-modal").modal('hide');
+                        vm.refresh();
+                    },
+                    function(error) {
+                        vm.refresh();
+                        notifyError(error);
+                    });
+            } else {
+                notifyError('@Html.Raw(Localizer["Fill all fields"].Value)');
+            }
+        }
+
+        vm.saveUserInfo = function() {
+            if (vm.validatedFields.isValid()) {
+                var data = {};
+                if (@User.IsInRole(nameof(Roles.Admin)).ToString().ToLower() === true) {
+                    data = {
+                        Id: vm.Id(),
+                        UserName: vm.UserName(),
+                        Email: vm.Email(),
+                        PhoneNumber: vm.PhoneNumber(),
+                        Gender: vm.Gender(),
+                        Birthdate: vm.Birthdate(),
+                        SelectedRoles: [vm.SelectedRoles()],
+                        NewPassword: vm.NewPassword(),
+                        IsActive: vm.IsActive()
+                    };
+                } else {
+                    data = {
+                        Id: vm.Id(),
+                        UserName: vm.UserName(),
+                        Email: vm.Email(),
+                        PhoneNumber: vm.PhoneNumber(),
+                        Gender: vm.Gender(),
+                        Birthdate: vm.Birthdate()
+                    };
+                }
+
+                vm.serviceProxy.putJsonResult(usersUrl,
+                    data,
+                    function(result) {
+                        if (result.error) {
+                            notifyError(result);
+                        } else {
+                            bootstrapSuccess('@Html.Raw(Localizer["Editing"].Value)',
+                                '@Html.Raw(Localizer["User successfully saved"].Value)');
+                            $("#edit-user-modal").modal('toggle');
+                            vm.refresh();
+                        }
+                    });
+            } else {
+                notifyError('@Html.Raw(Localizer["Fill all fields"].Value)');
+            }
+        }
+    });
+
+    function notifyError(result) {
+        if (Array.isArray(result.responseJSON.errors)) {
+            result.responseJSON.errors.forEach(function (error) {
+                bootstrapError(error);
+            });
+        } else if (typeof value === "undefined") {
+            bootstrapError(result);
+        } else {
+            bootstrapError(result.responseJSON.error);
+        }
+    }
+
+    function getRoles(url, serviceProxy, roles) {
+        serviceProxy.getJsonResult(url,
+            null,
+            function(result) {
+                if (result.error) {
+                    notifyError(result);
+                } else {
+                    result.forEach(function (role) {
+                        roles.push(new Option(role.text, role.value));
+                    });
+                }
+            });
+    }
+};
+</script>

@@ -1,0 +1,116 @@
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@using NasladdinPlace.UI.Extensions
+@inject IViewLocalizer Localizer
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>@ViewData["Title"] - Nasladdin</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="~/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="~/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="~/icons/favicon-16x16.png">
+    <environment names="Development">
+        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+        <link rel="stylesheet" href="~/lib/font-awesome/css/font-awesome.css" />
+        <link rel="stylesheet" href="~/lib/metisMenu/dist/metisMenu.css" />
+        <link rel="stylesheet" href="~/lib/toastr/toastr.css" />
+        <link rel="stylesheet" href="~/lib/sweetalert/dist/sweetalert.css" />
+        <link rel="stylesheet" href="~/css/animate.css" />
+        <link rel="stylesheet" href="~/css/style.css" asp-append-version="true" />
+        <script src="~/lib/jquery/dist/jquery.js"></script>
+    </environment>
+    <environment names="Staging,Production">
+        <link rel="stylesheet" href="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/css/bootstrap.min.css"
+              asp-fallback-href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+              asp-fallback-href="~/lib/font-awesome/css/font-awesome.min.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/metisMenu/2.2.0/metisMenu.min.css"
+              asp-fallback-href="~/lib/metisMenu/dist/metisMenu.min.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css"
+              asp-fallback-href="~/lib/toastr/toastr.min.css" />
+        <link rel="stylesheet" href="~/css/animate.css" />
+        <link rel="stylesheet" href="~/lib/sweetalert/dist/sweetalert.css" />
+        <link rel="stylesheet" href="~/css/style.min.css" asp-append-version="true" />
+        <link rel="manifest" href="~/manifest.5c1357cd6dcc8d31d1e5959e2ba3bd40.json" />
+        <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-2.2.0.min.js"
+                asp-fallback-src="~/lib/jquery/dist/jquery.min.js"
+                asp-fallback-test="window.jQuery">
+        </script>
+    </environment>
+
+</head>
+<body class="fixed-sidebar">
+
+<div id="wrapper" class="@Html.PageClass()">
+
+    @(await Html.PartialAsync("_Navigation"))
+
+    <div id="page-wrapper" class="gray-bg @ViewBag.SpecialClass">
+        @(await Html.PartialAsync("_TopNavbar"))
+        @RenderBody()
+
+        @if (ViewBag.TextReference ?? false)
+        {
+            <partial name="~/Views/Shared/Controls/_modalTextReferenceFilter.cshtml"/>
+            }
+
+        @(await Html.PartialAsync("_Footer"))
+    </div>
+</div>
+    <environment names="Development">
+        <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+        <script type="text/javascript" src="~/lib/moment/moment.js"></script>
+        <script src="~/lib/toastr/toastr.js"></script>
+        <script src="~/lib/sweetalert/dist/sweetalert-dev.js"></script>
+        <script src="~/js/site.min.js" asp-append-version="true"></script>
+        <script src="~/lib/metisMenu/dist/metisMenu.js"></script>
+        <script src="~/lib/slimScroll/jquery.slimscroll.js"></script>
+        <script src="~/lib/pace/pace.js"></script>
+        <script src="~/js/script.js" asp-append-version="true"></script>
+        <script src="~/lib/jquery-ajax-unobtrusive/dist/jquery.unobtrusive-ajax.js"></script>
+        <script src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
+        <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>        
+    </environment>
+    <environment names="Staging,Production">
+        <script src="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/bootstrap.min.js"
+                asp-fallback-src="~/lib/bootstrap/dist/js/bootstrap.min.js"
+                asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal">
+        </script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"
+                asp-fallback-src="~/lib/toastr/toastr.min.js"></script>
+        <script src="~/lib/moment/min/moment.min.js"></script>
+        <script src="~/lib/sweetalert/dist/sweetalert.min.js"></script>
+        <script src="~/js/site.min.js" asp-append-version="true"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/metisMenu/2.2.0/metisMenu.min.js"
+                asp-fallback-src="~/lib/metisMenu/dist/metisMenu.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jQuery-slimScroll/1.3.7/jquery.slimscroll.min.js"
+                asp-fallback-src="~/lib/slimScroll/jquery.slimscroll.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.0.2/pace.min.js"
+                asp-fallback-src="~/lib/PACE/pace.min.js"></script>
+        <script src="~/js/script.js" asp-append-version="true"></script>
+        <script src="~/lib/jquery-ajax-unobtrusive/dist/jquery.unobtrusive-ajax.min.js"></script>
+        <script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.17.0/jquery.validate.min.js"
+                asp-fallback-src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+        <script src="https://ajax.aspnetcdn.com/ajax/jquery.validation.unobtrusive/3.2.6/jquery.validate.unobtrusive.min.js"
+                asp-fallback-src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    </environment>
+    <script src="/Urls/GenerateUrlsJsFile"></script>
+    <script src="~/js/validation.js"></script>
+    <script type="text/javascript" src="~/js/knockout/knockout-3.4.0.js"></script>
+    <script type="text/javascript" src="~/lib/moment/locale/ru.js"></script>
+    <script src="~/js/knockout/knockout.mapping-latest.js"></script>
+    <script src="~/js/knockout/knockout-date-bindings.js"></script>
+    <script src="~/js/knockout/knockout.helper.js"></script>
+    <script src="~/js/knockout/knockout.customBindings.js"></script>
+    <script type="text/javascript" src="~/lib/Knockout-Validation/Dist/knockout.validation.min.js"></script>
+    <script type="text/javascript" src="~/lib/Knockout-Validation/Localization/ru-RU.js"></script>
+    <script type="text/javascript" src="~/js/common.min.js"></script>
+    <script src="~/main.b3a8c75210acd94cb98f.chunk.js"></script>
+    <script src="~/runtime~main.2f9b060e019bf44c57b3.js"></script>
+    <script src="~/vendors~main.99ce9dde01c711c3c3c1.chunk.js"></script>
+@RenderSection("scripts", required: false)
+</body>
+</html>

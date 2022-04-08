@@ -1,0 +1,49 @@
+{
+  "app.components.NotFoundPage.header": "Страница не найдена.",
+  "app.components.LogsPage.header": "Логи",
+  "app.components.LogsPage.time": "Время",
+  "app.components.LogsPage.type": "Тип",
+  "app.components.LogsPage.message": "Сообщение",
+  "app.components.PosDisplayPage.posTemporarilyDisconnected":
+    "Витрина временно отключена",
+  "app.components.PosDisplayPage.sorryForInconvenience":
+    "Приносим извинения за неудобства",
+  "app.components.PosDisplayPage.secondAbbreviation":
+    "cек",
+  "app.components.PosDisplayPage.secondRowTimerPageText":
+    "Витрина будет готова через",
+  "app.components.PosDisplayPage.firstRowTimerPageTextFirstPart":
+    "Спасибо за покупку!",
+  "app.components.PosDisplayPage.firstRowTimerPageTextSecondPart":
+    "Ждем вас снова",
+  "app.components.PosDisplayPage.firstRowQrCodePageText":
+    "Установите",
+  "app.components.PosDisplayPage.secondRowBonusGiftQrCodePageText":
+    "Получите в подарок",
+  "app.components.PosDisplayPage.hundredRubles":
+    "100",
+  "app.components.PosDisplayPage.thirdRowQrCodePageTextFirstPart":
+    "Откройте",
+  "app.components.PosDisplayPage.thirdRowQrCodePageTextSecondPart":
+    "витрину",
+  "app.components.PosDisplayPage.thirdRowQrCodePageTextThirdPart":
+    "отсканировав QR код",
+  "app.components.PosDisplayPage.capPageHintText":
+    "После покупки не забудьте закрыть двери",
+  "app.components.PosDisplayPage.secondRowDiscountQrCodePageTextFirstPart":
+    "Вечером Nasladdin",
+  "app.components.PosDisplayPage.secondRowDiscountQrCodePageTextSecondPart":
+    "дарит скидки",
+  "app.components.PosDisplayPage.secondRowDiscountQrCodePageTextThirdPart":
+    "C 18:00 до 06:00",
+  "app.components.PosDisplayPage.secondRowDiscountQrCodePageTextFourthPart":
+    "скидки 20%",
+  "app.components.PosDisplayPage.secondRowUpdateMobileApplicationQrCodePageTextFirstPart":
+    "Если у вас не получается",
+  "app.components.PosDisplayPage.secondRowUpdateMobileApplicationQrCodePageTextSecondPart":
+    "открыть витрину",
+  "app.components.PosDisplayPage.secondRowUpdateMobileApplicationQrCodePageTextThirdPart":
+    "то переустановите",
+  "app.components.PosDisplayPage.secondRowUpdateMobileApplicationQrCodePageTextFourthPart":
+    "мобильное приложение"
+}

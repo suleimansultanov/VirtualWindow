@@ -1,0 +1,73 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="https://widget.cloudpayments.ru/bundles/checkout"></script>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+        <script>
+            this.createCryptogram = function () {
+                var result = checkout.createCryptogramPacket();
+
+                console.log("I'm here")
+                if (result.success) {
+                    // сформирована криптограмма
+                    alert(result.packet);
+                }
+                else {
+                    console.log("Error");
+                    // найдены ошибки в введённых данных, объект `result.messages` формата: 
+                    // { name: "В имени держателя карты слишком много символов", cardNumber: "Неправильный номер карты" }
+                    // где `name`, `cardNumber` соответствуют значениям атрибутов `<input ... data-cp="cardNumber">`
+                for (var msgName in result.messages) {
+                    alert(result.messages[msgName]);
+                }
+                }
+            };
+                        
+            $(function () {
+                /* Создание checkout */
+                checkout = new cp.Checkout(
+                    // public id из личного кабинета
+                    "pk_edff91f78d667d4796467c1a94b90",
+                    // тег, содержащий поля данных карты
+                    document.getElementById("paymentFormSample")
+                );
+            });
+
+            $(document).on('click', '#btn-create-cryptogram', function() {
+                createCryptogram();
+            })
+        </script>
+    </head>
+    <body>
+        <div style="width: 1140px; margin: 0 auto 0 auto;">
+            <h1><a href="https://cloudpayments.ru/Docs/Checkout">Cloud payments cryptogram generator</a></h1>
+            <form id="paymentFormSample" autocomplete="off">
+                <div class="form-group">
+                    <label>Card number</label>
+                    <input type="text" data-cp="cardNumber" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>Expiration month</label>
+                    <input type="text" data-cp="expDateMonth" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>Expiration year</label>
+                    <input type="text" data-cp="expDateYear" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>CVV</label>
+                    <input type="text" data-cp="cvv" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>Card holder</label>
+                    <input type="text" data-cp="name" class="form-control">
+                </div>
+                <div class="form-group">
+                    <button type="submit" id="btn-create-cryptogram" class="btn btn-primary">Create cryptogram</button>
+                </div>
+            </form>
+        </div>
+    </body>
+</html>

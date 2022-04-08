@@ -1,0 +1,179 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@using NasladdinPlace.Core.Enums
+@using NasladdinPlace.UI.ViewModels.Base
+@using NasladdinPlace.UI.ViewModels.Checks
+@model UniReferenceViewModel<BaseViewModel>
+@inject IViewLocalizer Localizer
+
+@{
+    var title = Localizer["AuditTitle"].Value;
+    var cancel = Localizer["Cancel"].Value;
+}
+
+<div class="btn-group">
+    @{
+        var unverifiedCheckItemsFilterName = nameof(PosOperationViewModel.HasUnverifiedCheckItems);
+    }
+    <!-- ko with: Filter -->
+    <!-- ko if: @(unverifiedCheckItemsFilterName).Value() -->
+    <button class="btn btn-sm btn-white" data-bind="click: function() { @(unverifiedCheckItemsFilterName).Value(false); $root.applyFilter(); }">@Localizer["All purchases"].Value</button>
+    <button class="btn btn-sm btn-primary">@Localizer["Conditional purchases"].Value</button>
+    <!-- /ko -->
+    <!-- ko ifnot: @(unverifiedCheckItemsFilterName).Value() -->
+    <button class="btn btn-sm btn-primary">@Localizer["All purchases"].Value</button>
+    <button class="btn btn-sm btn-white" data-bind="click: function() { @(unverifiedCheckItemsFilterName).Value(true); $root.applyFilter(); }">@Localizer["Conditional purchases"].Value</button>
+    <!-- /ko -->
+    <!-- /ko -->
+</div>
+<div class="modal" id="check-audit-history-modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content animated fadeIn">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4>@title</h4>
+            </div>
+            <div class="modal-body">
+                <table class="table table-bordered" role="grid">
+                    <caption>&nbsp;</caption>
+                    <thead role="rowgroup">
+                        <tr role="row">
+                            <th role="columnheader" id="userName">@Localizer["UserName"].Value</th>
+                            <th role="columnheader" id="goodName">@Localizer["GoodName"].Value</th>
+                            <th role="columnheader" id="label">@Localizer["Label"].Value</th>
+                            <th role="columnheader" id="createDate">@Localizer["CreateDate"].Value</th>
+                            <th role="columnheader" id="beforeChange">@Localizer["Before change"].Value</th>
+                            <th role="columnheader" id="afterChange">@Localizer["After change"].Value</th>
+                        </tr>
+                    </thead>
+                    <tbody role="rowgroup">
+                        <!-- ko if: auditHistory().length > 0-->
+                        <!-- ko foreach: auditHistory -->
+                        <tr role="row">
+                            <td role="gridcell" data-bind="text: userName() != null ? userName : '@Localizer["System"].Value'"></td>
+                            <td role="gridcell" data-bind="text: goodName"></td>
+                            <td role="gridcell" data-bind="text: label"></td>
+                            <td role="gridcell" data-bind="date: createdDate, dateFormat: 'DD.MM.YYYY HH:mm:ss'"></td>
+                            <td role="gridcell">
+                                <!-- ko if: oldStatus() == @((int) CheckItemStatus.Unverified) -->
+                                @Localizer[CheckItemStatus.Unverified.ToString()].Value
+                                <!-- /ko -->
+                                <!-- ko if: oldStatus() == @((int) CheckItemStatus.Unpaid) -->
+                                @Localizer[CheckItemStatus.Unpaid.ToString()].Value
+                                <!-- /ko -->
+                                <!-- ko if: oldStatus() == @((int) CheckItemStatus.Paid) -->
+                                @Localizer[CheckItemStatus.Paid.ToString()].Value
+                                <!-- /ko -->
+                                <!-- ko if: oldStatus() == @((int) CheckItemStatus.Refunded) -->
+                                @Localizer[CheckItemStatus.Refunded.ToString()].Value
+                                <!-- /ko -->
+                                <!-- ko if: oldStatus() == @((int) CheckItemStatus.Deleted) -->
+                                @Localizer[CheckItemStatus.Deleted.ToString()].Value
+                                <!-- /ko -->
+                                <!-- ko if: oldStatus() == @((int) CheckItemStatus.PaidUnverified) -->
+                                @Localizer[CheckItemStatus.PaidUnverified.ToString()].Value
+                                <!-- /ko -->
+                            </td>
+                            <td>
+                                <!-- ko if: newStatus() == @((int) CheckItemStatus.Unverified) -->
+                                @Localizer[CheckItemStatus.Unverified.ToString()].Value
+                                <!-- /ko -->
+                                <!-- ko if: newStatus() == @((int) CheckItemStatus.Unpaid) -->
+                                @Localizer[CheckItemStatus.Unpaid.ToString()].Value
+                                <!-- /ko -->
+                                <!-- ko if: newStatus() == @((int) CheckItemStatus.Paid) -->
+                                @Localizer[CheckItemStatus.Paid.ToString()].Value
+                                <!-- /ko -->
+                                <!-- ko if: newStatus() == @((int) CheckItemStatus.Refunded) -->
+                                @Localizer[CheckItemStatus.Refunded.ToString()].Value
+                                <!-- /ko -->
+                                <!-- ko if: newStatus() == @((int) CheckItemStatus.Deleted) -->
+                                @Localizer[CheckItemStatus.Deleted.ToString()].Value
+                                <!-- /ko -->
+                                <!-- ko if: newStatus() == @((int) CheckItemStatus.PaidUnverified) -->
+                                @Localizer[CheckItemStatus.PaidUnverified.ToString()].Value
+                                <!-- /ko -->
+                            </td>
+                        </tr>
+                        <!-- /ko -->
+                        <!-- /ko -->
+                        <!-- ko if: auditHistory().length == 0 -->
+                        <tr role="row">
+                            <td role="gridcell" colspan="6" class="text-center">@Localizer["Empty table"].Value</td>
+                        </tr>
+                        <!-- /ko -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-white" data-dismiss="modal">@cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    window.getGridCustomHandler = function () {
+        var self = this;
+        self.auditHistory = ko.observableArray([]);
+
+        return new GridCustomHandler(
+            vm => {
+                vm.edit = function (item) {
+                    const url = '/Checks/' + item.PosOperationId();
+                    window.open(url, '_blank');
+                }
+
+                vm.goodsMoving = function (item) {
+                    const url = '/GoodsMoving/DocumentGoodsMoving/' + item.PosOperationId();
+                    window.open(url, '_blank');
+                }
+
+                vm.history = function (item) {
+                    const url = '/api/Checks/' + item.PosOperationId() + '/auditHistory';
+
+                    vm.serviceProxy.getJsonResultCustomMask($.noop, $.noop, url, {}, function (result) {
+                        if (result.error) {
+                            bootstrapError(result.error);
+                        } else {
+                            var observableData = ko.mapping.fromJS(result);
+                            var array = observableData();
+
+                            self.auditHistory(array);
+                        }
+                    });
+
+                    $("#check-audit-history-modal").modal();
+                }
+
+                ko.bindingHandlers.bootstrapPopover = {
+                    init: function (element, valueAccessor) {
+                        var value = "";
+                        ko.utils.arrayForEach(valueAccessor(),
+                            function(item, index) {
+                               value += `<li><img width='35' height='35' src='${vm.getImageSource(item)}'/></li>`;
+                            });
+
+                        var $el = $(element);
+                        $el.attr('data-toggle', 'popover');
+                        $el.attr('data-trigger', 'hover');
+                        $el.attr('data-html', 'true');
+                        $el.attr('data-placement', 'right');
+                        $el.attr('data-content',  `<ul style='margin-bottom:0;' class='list-unstyled'>${value}</ul>`);
+                        $el.popover();
+                    }
+                };
+
+                vm.getImageSource = function(type) {
+                    if (type == @((int) PaymentCardCryptogramSource.Common))
+                        return '@Url.Content("~/images/banking_card.svg")';
+                    if (type == @((int) PaymentCardCryptogramSource.ApplePay))
+                        return '@Url.Content("~/images/apple_pay.svg")';
+                    if (type == @((int) PaymentCardCryptogramSource.GooglePay))
+                        return '@Url.Content("~/images/google_pay.svg")';
+                };
+
+                vm.hasCustomBackground = function (item) {
+                    return item.IsDocumentGoodsMovingHasUntiedItems && item.IsDocumentGoodsMovingHasUntiedItems() === true ? "rgba(255, 0, 0, 0.2)" : null;
+                };
+            });
+    };
+</script>

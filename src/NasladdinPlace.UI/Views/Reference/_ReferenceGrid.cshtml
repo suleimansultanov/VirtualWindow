@@ -1,0 +1,13 @@
+﻿@using NasladdinPlace.UI.ViewModels.Base
+@model UniReferenceViewModel<BaseViewModel>
+
+<div class="row">
+    <div class="col-sm-12">
+        <partial name="~/Views/Shared/Controls/_grid.cshtml" model="@Model" />
+
+        @if (!string.IsNullOrEmpty(Model.Configuration?.AfterGridPartialName))
+        {
+            <partial name="@Model.Configuration.AfterGridPartialName" model="@Model" />
+        }
+    </div>
+</div>

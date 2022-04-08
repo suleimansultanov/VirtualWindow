@@ -1,0 +1,5 @@
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Data Source=tcp:nasladdindbserver.database.windows.net,1433;Initial Catalog=NasladdinTestDb;User Id=Nasladdin;Password=Timelysoft_312;Max Pool Size=30;"
+  }
+}

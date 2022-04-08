@@ -1,0 +1,46 @@
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@using NasladdinPlace.UI.ViewModels.Base
+@model UniReferenceViewModel<BaseViewModel>
+@inject IViewLocalizer Localizer
+
+<script>
+    window.getGridCustomHandler = function () {
+        return new GridCustomHandler(
+            vm => {
+                vm.getHref = function (item) {
+                    var url = `/LabeledGoods/EditLabeledGoodAsync/${item.Id()}`;
+                    return url;
+                }
+
+                vm.getFormattedLabeledGood = function (item) {
+                    return `.. ${item.slice(item.length - 5, item.length)}`;
+                }
+
+                vm.sendPosContentRequest = function () {
+                    var posId = vm.CustomData.PosId();
+
+                    if (posId != 0) {
+                        PlantService.sendPlantContentRequest(posId,
+                            bootstrapSuccess('@Html.Raw(Localizer["Requesting pos content"].Value)', '@Html.Raw(Localizer["Pos content successfully requested"].Value)'),
+                            notifyError);
+                    } else {
+                        notifyError('@Html.Raw(Localizer["Impossible to make a request because is not selected pos"].Value)');
+                    }
+                }
+
+                function notifyError(result) {
+                    if (typeof result === 'string') {
+                        bootstrapError(result);
+                    }
+                    else if (Array.isArray(result.responseJSON.errors)) {
+                        result.responseJSON.errors.forEach(function (error) {
+                            bootstrapError(error);
+                        });
+                    }else {
+                        bootstrapError(result.responseJSON.error);
+                    }
+                }
+            });
+    };
+</script>
+

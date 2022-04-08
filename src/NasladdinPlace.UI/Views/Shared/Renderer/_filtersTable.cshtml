@@ -1,0 +1,22 @@
+﻿@using NasladdinPlace.UI.Managers.Reference.Enums
+@model NasladdinPlace.UI.Managers.Reference.Models.FormRendererItemInfo
+@{
+    var info = Model;
+}
+@if (info.RenderInfo.FilterState != FilterState.Disable)
+{
+    <i class="fa fa-filter filter-toggle" aria-hidden="true" data-bind="style: { color: @($"{info.Info.Name}.Value() != null && {info.Info.Name}.Value() !== ''") ? '#62cb31' : '#000000' }"></i>
+
+    <div style="display: none;" class="filter-container">
+        @await Html.PartialAsync("Renderer/_renderFilters", info.RenderInfo)
+        
+        @if (info.RenderInfo.Control != RenderControl.TextReferenceValueText)
+        {
+            <em class="fa fa-times close" data-bind="click: function(data, event) { @($"{info.Info.Name}.Value(null);") }"></em>
+        }
+    </div>
+}
+@if (info.RenderInfo.SortState != SortState.Disable)
+{
+    @await Html.PartialAsync("Renderer/_renderSort", info.RenderInfo)
+}

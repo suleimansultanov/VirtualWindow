@@ -1,0 +1,8 @@
+<!-- ko if: ($data.CryptogramSources().length == 1) -->
+    <div class="text-center">
+        <img width="35" height="35" data-bind="attr: { src : $root.getImageSource($data.CryptogramSources()[0])}" alt="cryptogram_logo_image"/>
+    </div>
+<!-- /ko -->
+<!-- ko if: ($data.CryptogramSources().length > 1) -->
+    <div class="text-center" data-bind="bootstrapPopover: $data.CryptogramSources()"><em class="fa fa-ellipsis-h"></em></div>
+<!-- /ko -->

@@ -1,0 +1,16 @@
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
+<table class="table invoice-total" role="grid" aria-hidden="True">
+    <caption>&nbsp;</caption>
+    <tbody role="rowgroup">
+        <tr role="row">
+            <td role="gridcell"><strong>@Localizer["Total items"].Value :</strong></td>
+            <td role="gridcell" data-bind="text: $root.CustomData.Count()"></td>
+        </tr>
+        <tr role="row">
+            <td role="gridcell"><strong>@Localizer["Average temperature"].Value :</strong></td>
+            <td role="gridcell" data-bind="numeric: $root.CustomData.AverageTemperature(), decimalPlaces: 2"></td>
+        </tr>
+    </tbody>
+</table>

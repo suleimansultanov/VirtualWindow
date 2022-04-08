@@ -1,0 +1,148 @@
+﻿@using NasladdinPlace.UI.ViewModels.Base
+@using Microsoft.AspNetCore.Mvc.Localization
+@using NasladdinPlace.UI.Helpers
+@using NasladdinPlace.UI.Managers.Reference.Enums
+@using NasladdinPlace.UI.ViewModels.Media
+@model UniReferenceViewModel<BaseViewModel>
+@inject IViewLocalizer Localizer
+
+@{
+    var saveButton = Localizer["Save"].Value;
+    var cancel = Localizer["Cancel"].Value;
+
+    var formRenderer = new FormRendererHelper<MediaContentToPosPlatformViewModel>();
+    var mediaContentId = formRenderer.Get(f => f.MediaContentId);
+    var posScreenType = formRenderer.Get(f => f.PosScreenType);
+}
+<div class="modal" id="attach-media-modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content animated fadeIn">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4>@Localizer["AddTitle"].Value</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group row">
+                    <label class="col-lg-12">@Html.RenderDisplay(posScreenType)</label>
+                    <div class="col-lg-12">@await Html.RenderControlAsync(posScreenType)</div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-lg-12">@Html.RenderDisplay(mediaContentId)</label>
+                    <div class="col-lg-12">
+                        <div class="input-group">
+                            <input class="form-control input-sm" data-bind="value:MediaContentFileName" maxlength="50" title="">
+                            <span class="input-group-btn">
+                                <button type="button" class="btn btn-sm btn-default narrow" data-bind="click: $root.selectMedia">...</button>
+                                <button type="button" class="btn btn-sm btn-default narrow " data-bind="click: $root.clearMedia"><em class="fa fa-times"></em></button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-white" data-dismiss="modal">@cancel</button>
+                <button type="button" class="btn btn-primary" data-bind="click: saveMedia">@saveButton</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    window.getGridCustomHandler = function () {
+        return new GridCustomHandler(
+            vm => {
+                const modalId = "#attach-media-modal";
+
+                vm.MediaContentToPosPlatformId = ko.observable(0);
+                vm.MediaContentId = ko.observable();
+                vm.MediaContentFileName = ko.observable();
+                vm.PosScreenType = ko.observable();
+
+                vm.add = function () {
+                    $(modalId).modal();
+                }
+
+                vm.selectMedia = function() {
+                    var callback = function(data) {
+                        vm.MediaContentId(data[0]);
+                        vm.MediaContentFileName(data[2]);
+                    };
+
+                    showTextReference('@TextReferenceSources.ImagesMediaContent', 'Медиа контент', 'simplePage', false, callback,  null, '');
+                }
+
+                vm.clearMedia = function() {
+                    vm.MediaContentId(null);
+                    vm.MediaContentFileName(null);
+                }
+
+                vm.remove = function(item) {
+                    bootstrapConfirmDelete(
+                        '@Html.Raw(Localizer["Attention"].Value)',
+                        '@Html.Raw(Localizer["Confirming delete message"].Value)',
+                        function () {
+                            const url = '/api/mediaContentToPlatforms/' + item.MediaContentToPosPlatformId();
+
+                            vm.serviceProxy.deleteJsonResult(url, {}, function (result) {
+                                if (result.error) {
+                                    bootstrapError(result.error);
+                                } else {
+                                    bootstrapSuccess('@Html.Raw(Localizer["Removing"].Value)', '@Html.Raw(Localizer["Media successfully removed"].Value)');
+                                    vm.refresh();
+                                }
+                            });
+                        });
+                }
+
+                vm.edit = function (item) {
+                    vm.MediaContentToPosPlatformId(item.MediaContentToPosPlatformId());
+                    vm.MediaContentId(item.MediaContentId());
+                    vm.MediaContentFileName(item.FileName());
+                    vm.PosScreenType(item.PosScreenType());
+
+                    $(modalId).modal();
+                }
+
+                vm.saveMedia = function() {
+                    const url = '/api/mediaContentToPlatforms';
+                    const data = {
+                        MediaContentToPosPlatformId: vm.MediaContentToPosPlatformId(),
+                        MediaContentId: vm.MediaContentId(),
+                        PosScreenType: vm.PosScreenType()
+                    };
+
+                    if (vm.MediaContentToPosPlatformId() > 0) {
+                        vm.serviceProxy.putJsonResult(url, data, function (result) {
+                            if (result.error) {
+                                bootstrapError(result.error);
+                            } else {
+                                bootstrapSuccess("@Html.Raw(Localizer["Editing"].Value)", "@Html.Raw(Localizer["Media content successfully updated"].Value)");
+                                clearNewItem();
+                                $(modalId).modal('hide');
+                                vm.refresh();
+                            }
+                        });
+                    } else {
+                        vm.serviceProxy.postJsonResult(url, data, function (result) {
+                            if (result.error) {
+                                bootstrapError(result.error);
+                            } else {
+                                bootstrapSuccess("@Html.Raw(Localizer["Saving"].Value)", "@Html.Raw(Localizer["Media content successfully saved"].Value)");
+                                clearNewItem();
+                                $(modalId).modal('hide');
+                                vm.refresh();
+                            }
+                        });
+                    }
+                }
+
+                function clearNewItem() {
+                    vm.MediaContentId(null);
+                    vm.MediaContentFileName(null);
+                    vm.PosScreenType(null);
+                    vm.MediaContentToPosPlatformId(0);
+                }
+
+            });
+    };
+</script>

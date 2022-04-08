@@ -1,0 +1,18 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.Mvc.Localization
+@using NasladdinPlace.Core.Models
+
+@inject IViewLocalizer Localizer
+@inject SignInManager<ApplicationUser> SingInManager
+@inject UserManager<ApplicationUser> UserManager
+<ul class="nav navbar-top-links navbar-right">
+    @if (SingInManager.IsSignedIn(User))
+    {
+        <li class="p-sm hidden-xs"><label>@Localizer["Hello"].Value, @UserManager.GetUserName(User)!</label></li>
+        <li><a class="p-sm" asp-area="" asp-controller="Account" asp-action="LogOut"><em class="fa fa-sign-out"></em>@Localizer["Log out"].Value!</a></li>
+    }
+    else
+    {
+        <li><a class="p-sm" asp-area="" asp-controller="Account" asp-action="Login">@Localizer["Log in"].Value</a></li>
+    }
+</ul>

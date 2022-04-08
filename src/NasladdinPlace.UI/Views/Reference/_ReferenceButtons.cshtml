@@ -1,0 +1,26 @@
+﻿@using NasladdinPlace.UI.ViewModels.Base
+@model UniReferenceViewModel<BaseViewModel>
+
+<div class="btn-group">
+    <button type="button" class="btn btn-default btn-sm" data-bind="click: applyFilter"><em class="fa fa-refresh"></em> Применить</button>
+    <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <span class="caret"></span>
+        <span class="sr-only">Toggle Dropdown</span>
+    </button>
+    <ul class="dropdown-menu">
+        <li>
+            <a href="#" data-bind="safeClick:clearFilter">Очистить фильтр</a>
+        </li>
+        <li>
+            <a href="#" data-bind="safeClick:clearSort">Очистить сортировку</a>
+        </li>
+        <li role="separator" class="divider"></li>
+        <li>
+            <a href="#" data-bind="safeClick:clearAll">Очистить все</a>
+        </li>
+    </ul>    
+</div>
+@if (Model.IsRenderFilter && (Model.Configuration == null || (Model.Configuration?.IsRenderFilter == true && Model.Configuration?.IsRenderModalFilter == true)))
+{
+    <button type="button" class="btn btn-primary btn-sm" data-bind="click: showModalFilter"><em class="fa fa-filter"></em></button>
+}

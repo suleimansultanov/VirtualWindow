@@ -1,0 +1,15 @@
+﻿@using NasladdinPlace.Core.Enums
+
+<!-- ko if: PosOperationMode() === @((int)PosMode.GoodsPlacing) && HasDocumentsGoodsMoving() -->
+<a class="btn-link" data-bind="click: $root.goodsMoving">
+    <span><em class="glyphicon glyphicon-edit"></em>&nbsp;Просмотр</span>
+</a> <br />
+<!-- /ko -->
+<!-- ko if: !HasDocumentsGoodsMoving() -->
+<a class="btn-link" data-bind="click: $root.edit">
+    <span><em class="glyphicon glyphicon-edit"></em>&nbsp;Редактировать</span>
+</a> <br />
+<a class="btn-link" data-bind="click: $root.history">
+    <span><em class="glyphicon glyphicon-list-alt"></em>&nbsp;История</span>
+</a>
+<!-- /ko -->

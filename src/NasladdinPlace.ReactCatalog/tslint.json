@@ -1,0 +1,37 @@
+{
+    "rules": {
+        "no-unused-expression": true,
+        "no-parameter-properties": false,
+        "no-duplicate-variable": true,
+        "curly": true,
+        "class-name": true,
+        "semicolon": false,
+        "triple-equals": true,
+        "no-debugger": true,
+        "prefer-const": true,
+        "no-default-export": true,
+        "no-var-keyword": true,
+        "no-unused-variable": true,
+        "no-trailing-whitespace": true,
+        "no-console": true,
+        "only-arrow-functions": [
+            true
+        ],
+        "ordered-imports": [
+            false,
+            {
+                "grouped-imports": false
+            }
+        ],
+        "linebreak-style": [
+            true,
+            "CRLF"
+        ],
+        "no-consecutive-blank-lines": true
+    },
+    "linterOptions": {
+        "exclude": [
+            "./node_modules/**/*.*"
+        ]
+    }
+}

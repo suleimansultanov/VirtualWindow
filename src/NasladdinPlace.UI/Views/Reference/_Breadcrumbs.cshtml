@@ -1,0 +1,23 @@
+﻿@using NasladdinPlace.UI.ViewModels.Base
+@using Microsoft.AspNetCore.Mvc.Localization
+@model UniReferenceViewModel<BaseViewModel>
+@inject IViewLocalizer Localizer
+
+<div class="row row-eq-height wrapper border-bottom white-bg p-xs">
+    <div class="col-xs-6 col-sm-8 custom-breadcrumb">
+        <ol class="breadcrumb">
+            @foreach (var item in Model.Configuration.BreadCrumbs)
+            {
+                <li class="hidden-xs">
+                    @Html.Raw(item)
+                </li>
+            }
+            <li class="active">
+                <strong>@ViewBag.Title</strong>
+            </li>
+        </ol>
+    </div>
+    <div class="col-xs-6 col-sm-4 text-right">
+        <partial name="~/Views/Shared/Renderer/_buttonActions.cshtml" model="@Model.Configuration" />            
+    </div>
+</div>

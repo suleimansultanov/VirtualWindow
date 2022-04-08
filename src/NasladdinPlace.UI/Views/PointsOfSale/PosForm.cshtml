@@ -1,0 +1,421 @@
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@using NasladdinPlace.Core.Enums
+@using NasladdinPlace.DAL.Constants
+@using NasladdinPlace.UI.ViewModels.PointsOfSale
+@using Newtonsoft.Json
+@using Newtonsoft.Json.Serialization
+@inject IViewLocalizer Localizer
+
+@model PosFormViewModel
+
+@{
+    ViewData["Title"] = Localizer["Interface"].Value;
+}
+<link href="~/lib/chosen/chosen.css" rel="stylesheet" />
+<style>
+    legend {
+        font-size: 15px;
+    }
+
+    .form-horizontal .control-label {
+        text-align: left;
+        font-weight: normal;
+    }
+</style>
+
+<div class="row row-eq-height wrapper border-bottom white-bg p-xs">
+    <div class="col-xs-7 col-sm-10" style="font-size: 14px;">
+        <ol class="breadcrumb" style="padding-top:5px;">
+            <li class="hidden-xs">
+                <a href="@Url.Action("All", "PointsOfSale")">@Localizer["Home"].Value</a>
+            </li>
+            <li class="active">
+                <strong>@ViewData["Title"]</strong>
+            </li>
+        </ol>
+    </div>
+    <div class="col-xs-5 col-sm-2" style="text-align: right;">
+        <button class="btn" data-bind="css: notificationsEnabledModeCssStyles, click: toggleEnabled, text:notificationsEnabledButtonText"></button>
+    </div>
+</div>
+
+<div class="wrapper wrapper-content animated fadeIn">
+    @if (Model.AllowedModes.Contains(PosMode.GoodsPlacing))
+    {
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="ibox float-e-margins m-b-sm">
+                    <div class="ibox-title">
+                        <h5>@Localizer["Placing mode"].Value</h5>
+                    </div>
+                    <div class="ibox-content">
+                        <div class="form-inline">
+                            <div class="form-group">
+                                <div class="col-sm-3">
+                                    <button data-posId="@Model.Id" class="btn btn-primary btn-outline js-openLeftDoor">
+                                        @Localizer["Open left door"].Value
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-3">
+                                    <button data-posId="@Model.Id" class="btn btn-primary btn-outline js-openRightDoor">
+                                        @Localizer["Open right door"].Value
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-3">
+                                    <button data-posId="@Model.Id" class="btn btn-primary btn-outline js-closeDoors">
+                                        @Localizer["Close doors"].Value
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    <div class="row">
+        <div class="@(Model.Id != 0 ? "col-lg-8" : "col-lg-12")">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>@Localizer["Edit point of sale"].Value</h5>
+                </div>
+                <div class="ibox-content">
+                    <form asp-controller="PointsOfSale" asp-action="@Model.Action" class="form-horizontal"
+                          data-ajax="true"
+                          data-ajax-success="toastr.success('@Localizer["Save success"].Value');" data-ajax-error="toastr.error('@Localizer["Save error"].Value');">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                        <input asp-for="Id" class="hidden" />
+                        <input asp-for="PosStatus" class="hidden" />
+                        <div class="form-group form-eq-height">
+                            <label class="col-sm-3 control-label">@Localizer["Abbreviated name"].Value</label>
+                            <div class="col-sm-9">
+                                <input asp-for="AbbreviatedName" class="form-control m-b-xxs" />
+                                <span asp-validation-for="AbbreviatedName" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="form-group form-eq-height">
+                            <label class="col-sm-3 control-label">@Localizer["Name"].Value</label>
+                            <div class="col-sm-9">
+                                <input asp-for="Name" class="form-control m-b-xxs" />
+                                <span asp-validation-for="Name" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="form-group form-eq-height">
+                            <label class="col-sm-3 control-label">@Localizer["Longitude"].Value</label>
+                            <div class="col-sm-9">
+                                <input asp-for="Longitude" class="form-control m-b-xxs" />
+                                <span asp-validation-for="Longitude" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="form-group form-eq-height">
+                            <label class="col-sm-3 control-label">@Localizer["Latitude"].Value</label>
+                            <div class="col-sm-9">
+                                <input asp-for="Latitude" class="form-control m-b-xxs" />
+                                <span asp-validation-for="Latitude" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="form-group form-eq-height">
+                            <label class="col-sm-3 control-label">@Localizer["City"].Value</label>
+                            <div class="col-sm-9">
+                                <select asp-for="CityId" asp-items="@Model.CitySelectList" class="form-control m-b-xxs"></select>
+                                <span asp-validation-for="CityId" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="form-group form-eq-height">
+                            <label class="col-sm-3 control-label">@Localizer["Street"].Value</label>
+                            <div class="col-sm-9">
+                                <input asp-for="Street" class="form-control m-b-xxs" />
+                                <span asp-validation-for="Street" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="form-group form-eq-height">
+                            <label class="col-sm-3 control-label">@Localizer["Accurate location"].Value</label>
+                            <div class="col-sm-9">
+                                <input asp-for="AccurateLocation" class="form-control m-b-xxs" />
+                                <span asp-validation-for="AccurateLocation" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="form-group form-eq-height">
+                            <label class="col-sm-3 control-label">@Localizer["Required screen resolution"].Value</label>
+                            <div class="col-sm-9">
+                                <select asp-for="RequiredScreenResolutionType" asp-items="@Model.ScreenResolutionSelectList" class="form-control m-b-xxs">
+                                    <option>@Localizer["Select"].Value</option>
+                                </select>
+                                <span asp-validation-for="RequiredScreenResolutionType" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="form-group form-eq-height">
+                            <label class="col-sm-3 control-label">@Localizer["Sensors controller type"].Value</label>
+                            <div class="col-sm-9">
+                                <select asp-for="SensorControllerType" asp-items="@Model.SensorControllerTypeSelectList" class="form-control m-b-xxs">
+                                    <option>@Localizer["Select"].Value</option>
+                                </select>
+                                <span asp-validation-for="SensorControllerType" class="text-danger"></span>
+                            </div>
+                        </div>
+                        @{ var posActivityStatusFieldClassName = Model.IsEditAction ? "form-group form-eq-height" : "hidden";}
+                        <div class="@posActivityStatusFieldClassName">
+                            <label class="col-sm-3 control-label">@Localizer["Pos activity status"].Value</label>
+                            <div class="col-sm-9">
+                                <select asp-for="PosActivityStatus" asp-items="@Model.PosActivityStatusSelectList" class="form-control m-b-xxs"></select>
+                                <span asp-validation-for="PosActivityStatus" class="text-danger"></span>
+                                <span id="lastWsMessage" class="hidden font-bold"></span>
+                            </div>
+                        </div>
+                        <div class="form-group form-eq-height">
+                            <label class="col-sm-3 control-label">@Localizer["QR code generation type"].Value</label>
+                            <div class="col-sm-9">
+                                <select asp-for="QrCodeGenerationType" class="form-control m-b-xxs">
+                                    @foreach (var qrCodeGenerationType in Enum.GetValues(typeof(PosQrCodeGenerationType)))
+                                    {
+                                        var localizedQrCodeGenerationType = Localizer[qrCodeGenerationType.ToString()].Value;
+                                        if ((PosQrCodeGenerationType)qrCodeGenerationType == Model.QrCodeGenerationType)
+                                        {
+                                            <option value="@((int) qrCodeGenerationType)" selected="selected">@localizedQrCodeGenerationType</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@((int) qrCodeGenerationType)">@localizedQrCodeGenerationType</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group form-eq-height">
+                            <label class="col-sm-3 control-label">@Localizer["Roles"].Value</label>
+                            <div class="col-sm-9">
+                                <select asp-for="SelectedRoles" asp-items="@Model.RolesMultiSelectList" multiple class="form-control m-b-xxs chosen-select" tabindex="-1"></select>
+                                <span asp-validation-for="RolesMultiSelectList" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="form-group form-eq-height">
+                            <label class="col-sm-3 control-label">@Localizer["Allowed modes"].Value</label>
+                            <div class="col-sm-9">
+                                <div class="m-b-xxs">
+                                    @if (Model.IsViewingPosModesAllowed)
+                                    {
+                                        @for (var i = 0; i < Model.SelectablePosModes.Count; ++i)
+                                        {
+                                            if (Model.SelectablePosModes[i].GetOperationMode() == PosMode.GoodsPlacing)
+                                            {
+                                                continue;
+                                            }
+                                            <label class="checkbox-inline">
+                                                @if (Model.SelectablePosModes[i].IsSelected)
+                                                {
+                                                    <input type="checkbox"
+                                                           asp-for="@Model.SelectablePosModes[i].IsSelected"
+                                                           checked="checked" />
+                                                }
+                                                else
+                                                {
+                                                    <input type="checkbox"
+                                                           asp-for="@Model.SelectablePosModes[i].IsSelected" />
+                                                }
+                                                @Localizer[Model.SelectablePosModes[i].GetOperationMode().ToString()].Value
+                                                <input asp-for="@Model.SelectablePosModes[i].OperationModeAsInt" type="hidden" />
+                                            </label>
+                                        }
+                                    }
+                                    <label class="checkbox-inline">
+                                        <input type="checkbox"
+                                               asp-for="IsRestrictedAccess" />
+                                        @Localizer["Is restricted access"].Value (<strong class="text-green">@Localizer["Corporate"].Value</strong>)
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group form-eq-height">
+                            <div class="col-sm-12">
+                                <button type="button"
+                                        class="btn btn-default"
+                                        id="cancel"
+                                        onclick="window.history.back()">
+                                    <i class="fa fa-remove"></i>&nbsp;@Localizer["Cancel"].Value
+                                </button>
+                                <button class="btn btn-primary" type="submit"><i class="fa fa-save"></i>&nbsp;@Localizer["Save"].Value</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        @if (Model.Id != 0)
+        {
+            <div class="col-lg-4">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>@Localizer["Tools"].Value</h5>
+                    </div>
+                    <div class="ibox-content">
+                        <fieldset>
+                            <legend>@Localizer["Goods"].Value</legend>
+                            <div>
+                                <a asp-controller="LabeledGoods" asp-action="GetLabeledGoodsGrouppedByGood" asp-route-posId="@Model.Id" class="btn btn-link">
+                                    @Localizer["Show content"].Value
+                                </a>
+                            </div>
+                            @if (Model.AllowedModes.Contains(PosMode.GoodsIdentification))
+                            {
+                                <div>
+                                    <a asp-controller="LabeledGoods"
+                                       asp-action="Identify"
+                                       asp-route-posId="@Model.Id"
+                                       class="btn btn-link">
+                                        @Localizer["Assign labels to good"].Value
+                                    </a>
+                                </div>
+                            }
+                        </fieldset>
+
+                        <fieldset>
+                            <legend>@Localizer["Testing"].Value</legend>
+                            <div>
+                                <a asp-controller="Logs" asp-action="GetLogs" asp-route-id="@Model.Id" class="btn btn-link">
+                                    @Localizer["Logs"].Value
+                                </a>
+                            </div>
+                        </fieldset>
+                        <fieldset>
+                            <legend>@Localizer["Settings"].Value</legend>
+                            <div>
+                                <a href="/plantdisplay/index/@Model.Id" class="btn btn-link">
+                                    @Localizer["QR code"].Value
+                                </a>
+                            </div>
+                            <div>
+                                <a asp-controller="PosSensors" asp-action="GetPosAbnormalSensorMeasurement" asp-route-posId="@Model.Id" class="btn btn-link">
+                                    <span>@Localizer["Abnormal sensors measurements history"].Value</span>
+                                </a>
+                            </div>
+                            <div>
+                                <a asp-controller="PointsOfSale"
+                                   asp-action="TemperatureState"
+                                   asp-route-posId="@Model.Id"
+                                   class="btn btn-link">
+                                    @Localizer["Temperature state"].Value
+                                </a>
+                            </div>
+                            <div class="form-group">
+                                <a asp-controller="PointsOfSale"
+                                   asp-action="Monitoring"
+                                   asp-route-posId="@Model.Id"
+                                   class="btn btn-link">
+                                    @Localizer["Condition monitoring"].Value
+                                </a>
+                            </div>
+                        </fieldset>
+                        <div>
+                            <a asp-controller="PosMediaContents"
+                               asp-action="GetPosMedia"
+                               asp-route-posId="@Model.Id"
+                               class="btn btn-link">
+                                @Localizer["Media content"].Value
+                            </a>
+                        </div>
+                        <div>
+                            <button data-posId="@Model.Id" class="btn btn-link js-deletePlant">
+                                @Localizer["Delete"].Value
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@section scripts {
+    <script src="~/lib/chosen/chosen.jquery.js"></script>
+    <script>
+    $('.chosen-select').chosen({
+        no_results_text: "@Html.Raw(Localizer["Not found"].Value)",
+        placeholder_text_multiple: "@Html.Raw(Localizer["Placeholder"].Value)",
+        hide_results_on_select: false,
+        width: '100%'
+    });
+
+    if (@User.IsInRole(nameof(Roles.Admin)).ToString().ToLower() !== true) {
+        $(".chosen-select").attr('disabled', true).trigger("chosen:updated");
+    }
+    </script>
+    <script>
+        PlantsController.init(document);
+    </script>
+    <script type="text/javascript">
+    @{
+        var serializerSettings = new JsonSerializerSettings
+        {
+            ContractResolver = new CamelCasePropertyNamesContractResolver()
+        };
+    }
+    var pointOfSale = @Html.Raw(JsonConvert.SerializeObject(Model, serializerSettings));
+    var posFormViewModel = new PosFormViewModel(pointOfSale);
+    ko.applyBindings(posFormViewModel);
+
+    function PosFormViewModel(pointOfSale) {
+        var self = this;
+        var serviceProxy = new ServiceProxy({ contentType: "application/json" });
+
+        ko.mapping.fromJS(pointOfSale, {}, self);
+
+        self.toggleEnabled = function() {
+            self.areNotificationsEnabled(!self.areNotificationsEnabled());
+            performRequest();
+        };
+
+        self.notificationsEnabledModeCssStyles = ko.computed(function() {
+            return self.areNotificationsEnabled() ? "btn btn-primary" : "btn btn-danger";
+        });
+
+        self.notificationsEnabledButtonText = ko.computed(function() {
+            var updateNotificationsPermission = self.areNotificationsEnabled()
+                ? "@Html.Raw(Localizer["Enabled"].Value.ToLower())"
+                : "@Html.Raw(Localizer["Disabled"].Value.ToLower())";
+            return "@Html.Raw(Localizer["Notification"].Value)" + " " + updateNotificationsPermission;
+        });
+
+        getLastWsMessage(serviceProxy, self.id());
+
+        function performRequest() {
+            const url = '/api/plants/' + self.id() + '/notificationsStatus';
+            const data = {
+                AreNotificationsEnabled: self.areNotificationsEnabled()
+            }
+
+            serviceProxy.postJsonResult(url,
+                data,
+                function(result) {
+                    if (result.error) {
+                        bootstrapError(result.error);
+                    } else {
+                        bootstrapSuccess("@Localizer["Save success"].Value", result.message);
+                    }
+                });
+        }
+    }
+
+    function getLastWsMessage(serviceProxy, id) {
+        const url = '/api/plants/' + id + '/deactivatedPosWsMessages';
+        const data = {};
+        serviceProxy.postJsonResult(url,
+            data,
+            function(result) {
+                if (result.error) {
+                    bootstrapError(result.error);
+                } else {
+                    var message = result.result;
+                    if (result.result !== "") {
+                        message = "&#9888 " + message;
+                    }
+                    $("#lastWsMessage").html(message);
+                    $("#lastWsMessage").removeClass('hidden').addClass('active');
+                }
+            });
+    }
+    </script>
+}

@@ -1,0 +1,140 @@
+﻿@using NasladdinPlace.UI.Extensions
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
+<nav class="navbar-default navbar-static-side" role="navigation">
+    <div class="slimScrollDiv" style="position: relative; overflow: hidden; width: auto; height: 100%;">
+        <div class="sidebar-collapse">
+            <ul class="nav" id="side-menu" style="overflow: hidden; width: auto; height: 100%;">
+                <li class="nav-header" style="padding: 30px 25px;">
+                </li>
+                <li class="@Html.IsSelected(controller: "PointsOfSale")
+                           @Html.IsSelected(controller: "PlantImages")
+                           @Html.IsSelected(controller: "PosMediaContents")
+                           @Html.IsSelected(controller: "Logs", action: "GetLogs")
+                           @Html.IsSelected(controller: "PosSensors", action: "GetPosAbnormalSensorMeasurement")">
+                    <a href="@Url.Action("All", "PointsOfSale")"><em class="fa fa-th-large"></em> <span class="nav-label">@Localizer["Points of sale"].Value</span> </a>
+                </li>
+                <li class="@Html.IsSelected(controller: "Checks")
+                           @Html.IsSelected(controller: "LabeledGoods", action: "Identify")
+                           @Html.IsSelected(controller: "GoodCategories")
+                           @Html.IsSelected(controller: "Goods")
+                           @Html.IsSelected(controller: "GoodImages")
+                           @Html.IsSelected(controller: "LabeledGoods", action: "GetLabeledGoodsGrouppedByGood")
+                           @Html.IsSelected(controller: "LabeledGoods", action: "EditLabeledGoodAsync")
+                           @Html.IsSelected(controller: "Makers")
+                           @Html.IsSelected(controller: "Catalog", action: "GetCatalogs")">
+                    <a href="#"><em class="fa fa-shopping-bag"></em> <span class="nav-label">@Localizer["Sales"].Value</span><span class="fa arrow"></span></a>
+                    <ul class="nav nav-second-level collapse @Html.IsSelected(controller: "GoodsMoving", cssClass: "in")
+                                                             @Html.IsSelected(controller: "LabeledGoods", action: "Identify", cssClass: "in")
+                                                             @Html.IsSelected(controller: "GoodCategories", cssClass: "in")
+                                                             @Html.IsSelected(controller: "Goods", cssClass: "in")
+                                                             @Html.IsSelected(controller: "GoodImages", cssClass: "in")
+                                                             @Html.IsSelected(controller: "LabeledGoods", action: "GetLabeledGoodsGrouppedByGood", cssClass: "in")
+                                                             @Html.IsSelected(controller: "LabeledGoods", action: "EditLabeledGoodAsync", cssClass: "in")
+                                                             @Html.IsSelected(controller: "Catalog", action: "GetCatalogs", cssClass: "in")">
+                        <li class="@Html.IsSelected(controller: "Goods")
+                                   @Html.IsSelected(controller: "GoodImages")">
+                            <a href="@Url.Action(action: "GetGoods", controller: "Goods")"><em class="fa fa-book"></em> <span class="nav-label">@Localizer["Goods"].Value</span> </a>
+                        </li>
+                        <li class="@Html.IsSelected(controller: "GoodCategories")">
+                            <a href="@Url.Action("GetGoodCategories", "GoodCategories")"><em class="fa fa-th"></em> <span class="nav-label">@Localizer["Categories"].Value</span> </a>
+                        </li>
+                        <li class="@Html.IsSelected(controller: "Makers")">
+                            <a href="@Url.Action("GetMakers","Makers")"><em class="fa fa-truck"></em> <span class="nav-label">@Localizer["Makers"].Value</span> </a>
+                        </li>
+                        <li class="@Html.IsSelected(controller: "LabeledGoods", action: "GetLabeledGoodsGrouppedByGood")
+                                   @Html.IsSelected(controller: "LabeledGoods", action: "EditLabeledGoodAsync")">
+                            <a href="@Url.Action("GetLabeledGoodsGrouppedByGood", "LabeledGoods")"><em class="fa fa-list"></em> <span class="nav-label">@Localizer["POS content"].Value</span></a>
+                        </li>
+                        <li class="@Html.IsSelected(controller: "LabeledGoods", action: "Identify")">
+                            <a asp-controller="LabeledGoods"
+                               asp-action="Identify"
+                               asp-route-posId="0"><em class="fa fa-link"></em><span class="nav-label"> @Localizer["Identification of goods"].Value</span></a>
+                        </li>
+                        <li class="@Html.IsSelected(controller: "GoodsMoving")">
+                            <a href="@Url.Action("GetChecks","GoodsMoving")"><em class="fa fa-shopping-cart"></em> <span class="nav-label">@Localizer["GoodsMoving"].Value</span> </a>
+                        </li>
+                        <li class="@Html.IsSelected(controller: "Catalog")">
+                            <a href="@Url.Action("GetCatalogs","Catalog")"><em class="fa fa-list"></em> <span class="nav-label">@Localizer["Catalog"].Value</span> </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="
+                    @Html.IsSelected(controller: "Logs", action: "GetPosLogs")
+                    @Html.IsSelected(controller: "Schedules")
+                    @Html.IsSelected(controller: "Users")
+                    @Html.IsSelected(controller: "PosScreenTemplates")
+                    @Html.IsSelected(controller: "ReportsUploadingInfos")
+                    @Html.IsSelected(controller: "Security")
+                    @Html.IsSelected(controller: "Roles")">
+                    <a href="#"><em class="fa fa-cogs"></em> <span class="nav-label">@Localizer["Administration"].Value</span> <span class="fa arrow"></span></a>
+                    <ul class="nav nav-second-level collapse  @Html.IsSelected(controller: "Logs", action: "GetPosLogs", cssClass: "in")
+                                                              @Html.IsSelected(controller: "Schedules", cssClass: "in")
+                                                              @Html.IsSelected(controller: "Users", cssClass: "in")
+                                                              @Html.IsSelected(controller: "ReportsUploadingInfos", cssClass: "in")
+                                                              @Html.IsSelected(controller: "PosScreenTemplates", cssClass: "in")
+                                                              @Html.IsSelected(controller: "Security", cssClass: "in")
+                                                              @Html.IsSelected(controller: "Roles", cssClass: "in")">
+                        <li class="@Html.IsSelected(controller: "Logs", action: "GetPosLogs")">
+                            <a href="@Url.Action(action: "GetPosLogs", controller: "Logs")"><em class="fa fa-file-zip-o"></em> <span class="nav-label">@Localizer["Logs"].Value</span> </a>
+                        </li>
+                        <li class="@Html.IsSelected(controller: "ReportsUploadingInfos")">
+                            <a href="@Url.Action("GetReportsUploadingInfos", "ReportsUploadingInfos")"><em class="fa fa-table"></em> <span class="nav-label">@Localizer["Uploading table"].Value</span> </a>
+                        </li>
+                        <li class="@Html.IsSelected(controller: "Schedules")">
+                            <a href="@Url.Action("GetSchedules", "Schedules")"><em class="fa fa-cog"></em> <span class="nav-label">@Localizer["API State"].Value</span> </a>
+                        </li>
+                        <li class="@Html.IsSelected(controller: "Users")">
+                            <a href="@Url.Action("GetUsers", "Users")"><em class="fa fa-users"></em> <span class="nav-label">@Localizer["Users"].Value</span> </a>
+                        </li>
+                        <li class="@Html.IsSelected(controller: "PosScreenTemplates")">
+                            <a href="@Url.Action("GetTemplates", "PosScreenTemplates")"><em class="fa fa-code"></em> <span class="nav-label" data-i18n="nav.dashboard">@Localizer["Templates"].Value</span> </a>
+                        </li>
+                        <li class="@Html.IsSelected(controller: "Security")">
+                            <a href="@Url.Action("GetPermissions", "Security")"><em class="fa fa-lock"></em> <span class="nav-label" data-i18n="nav.dashboard">@Localizer["Permission management"].Value</span> </a>
+                        </li>
+                        <li class="@Html.IsSelected(controller: "Roles")">
+                            <a href="@Url.Action("GetRoles", "Roles")"><em class="fa fa-key"></em> <span class="nav-label" data-i18n="nav.dashboard">@Localizer["Roles"].Value</span> </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="@Html.IsSelected(controller: "PromotionSettings")
+                           @Html.IsSelected(controller: "Discounts", action: "GetDiscounts")
+                           @Html.IsSelected(controller: "LabeledGoods", action: "Disabled")
+                           @Html.IsSelected(controller: "LabeledGoods", action: "TrackingHistory")
+                           @Html.IsSelected(controller: "MediaContents")
+                           @Html.IsSelected(controller: "UserNotifications")
+                           @Html.IsSelected(controller: "MediaContentToPlatforms")">
+                    <a href="#"><em class="fa fa-bar-chart-o"></em> <span class="nav-label">@Localizer["Marketing"].Value</span><span class="fa arrow"></span></a>
+                    <ul class="nav nav-second-level collapse @Html.IsSelected(controller: "PromotionSettings", cssClass: "in")
+                                                             @Html.IsSelected(controller: "Discounts", action: "GetDiscounts", cssClass: "in")
+                                                             @Html.IsSelected(controller: "LabeledGoods", action: "Disabled", cssClass: "in")
+                                                             @Html.IsSelected(controller: "LabeledGoods", action: "TrackingHistory", cssClass: "in")
+                                                             @Html.IsSelected(controller: "MediaContents", cssClass: "in")
+                                                             @Html.IsSelected(controller: "UserNotifications", cssClass: "in")
+                                                             @Html.IsSelected(controller: "MediaContentToPlatforms", cssClass: "in")">
+                        <li class="@Html.IsSelected(controller: "Discounts", action: "GetDiscounts")">
+                            <a href="@Url.Action(action: "GetDiscounts", controller: "Discounts")"><em class="fa fa-percent "></em> <span class="nav-label">@Localizer["Discounts"].Value</span> </a>
+                        </li>
+                        <li class="@Html.IsSelected(controller: "PromotionSettings")">
+                            <a href="@Url.Action("GetPromotionSettings", "PromotionSettings")"><em class="fa fa-bell"></em> <span class="nav-label">@Localizer["Promotions"].Value</span> </a>
+                        </li>
+                        <li class="@Html.IsSelected(controller: "UserNotifications")">
+                            <a href="@Url.Action("GetNotifications", "UserNotifications")"><em class="fa fa-envelope"></em> <span class="nav-label">@Localizer["UserNotifications"].Value</span> </a>
+                        </li>
+                        <li class="@Html.IsSelected(controller: "LabeledGoods", action: "Disabled")">
+                            <a href="@Url.Action("Disabled", "LabeledGoods")"><em class="fa fa-tags"></em> <span class="nav-label">@Localizer["Disabled labels"].Value</span> </a>
+                        </li>
+                        <li class="@Html.IsSelected(controller: "LabeledGoods", action: "TrackingHistory")">
+                            <a href="@Url.Action(action: "TrackingHistory", controller: "LabeledGoods")"><em class="fa fa-archive"></em> <span class="nav-label">@Localizer["Tracking history"].Value</span> </a>
+                        </li>
+                        <li class="@Html.IsSelected(controller: "MediaContents")@Html.IsSelected(controller: "MediaContentToPlatforms")">
+                            <a href="@Url.Action("GetMedia", "MediaContents")"><em class="fa fa-image"></em> <span class="nav-label">@Localizer["Media"].Value</span> </a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>

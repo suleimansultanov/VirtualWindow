@@ -1,0 +1,71 @@
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@using NasladdinPlace.UI.Managers.Reference.Enums
+@using NasladdinPlace.UI.ViewModels.Base
+@model UniReferenceViewModel<BaseViewModel>
+
+@inject IViewLocalizer Localizer
+
+<div class="table-responsive">
+    <table class="table table-striped table-bordered table-hover" id="grid-table" style="margin-bottom: 0px;" role="grid">
+        <caption>&nbsp;</caption>
+        <thead role="rowgroup">
+            <tr role="row" data-bind="with:Filter">
+                @{
+                    var isFiltersTable = Model.IsRenderFilter && (Model.Configuration == null || (Model.Configuration?.IsRenderFilter == true));
+                }
+                @foreach (var info in Model.FormRendererInfos.Where(x => x.RenderInfo.DisplayType == DisplayType.InGrid || x.RenderInfo.DisplayType == DisplayType.InAndBelowGrid))
+                {
+                    switch (info.RenderInfo.Control)
+                    {
+                        case RenderControl.Custom:
+                            <th role="columnheader" id="customDisplayName">
+                                @info.RenderInfo.DisplayName
+                            </th>
+                            break;
+                        default:
+                            <th role="columnheader" id="defaultDisplayName">
+                                @info.RenderInfo.DisplayName
+                                @if (Model.ContextFields == null || Model.ContextFields.All(x => x != info.RenderInfo.PropertyName))
+                                {
+                                    if (isFiltersTable)
+                                    {
+                                        @await Html.PartialAsync("Renderer/_filtersTable", info)
+                                    }
+                                }
+                            </th>
+                            break;
+                    }
+                }
+            </tr>
+        </thead>
+        <tbody role="rowgroup" id="grid-body">
+            <!-- ko if: Items().length > 0-->
+            <!-- ko foreach: Items -->
+            <tr role="row" data-expandable="true" data-bind="click : $parent.selectRow, css : { 'row-selected' : $parent.isSelectRow($data)}, style: {background: $parent.hasCustomBackground($data), color: $parent.hasCustomTextColor($data)}">
+                @foreach (var info in Model.FormRendererInfos.Where(x => x.RenderInfo.DisplayType == DisplayType.InGrid || x.RenderInfo.DisplayType == DisplayType.InAndBelowGrid))
+                {
+                    <td role="gridcell">
+                        <partial name="~/Views/Shared/Renderer/_renderText.cshtml" model="@info.RenderInfo" />
+                    </td>
+                }
+            </tr>
+            <!-- /ko -->
+            <!-- /ko -->
+            <!-- ko if: Items().length == 0-->
+            <tr role="row" data-expandable="true">
+                <td role="gridcell" class="text-center" colspan="@(Model.FormRendererInfos.Count(x => x.RenderInfo.DisplayType == DisplayType.InGrid || x.RenderInfo.DisplayType == DisplayType.InAndBelowGrid))">
+                    @Localizer["No rows"].Value
+                </td>
+            </tr>
+            <!-- /ko -->
+        </tbody>
+    </table>
+</div>
+@if (Model.Pagination != null)
+{
+    <div class="custom-pagination">
+        <div data-bind="with: Pagination" style="position: relative; left: 1px">
+            <pagination params="data: TotalItems, page: Page, pageSize: PageSize, pagesCount: 5, change: $root.refresh"></pagination>
+        </div>
+    </div>
+}

@@ -1,0 +1,73 @@
+﻿@using NasladdinPlace.UI.Helpers
+@using NasladdinPlace.UI.Managers.Reference.Enums
+@using NasladdinPlace.Utilities.EnumHelpers
+@model NasladdinPlace.UI.Managers.Reference.Attributes.RenderAttribute
+@{
+    var info = Model;
+    var filterName = string.IsNullOrWhiteSpace(info.FilterName) ? info.PropertyName : info.FilterName;
+}
+@switch (info.Control)
+{
+    case RenderControl.Combo:
+    case RenderControl.ComboEmpty:
+        <select class="form-control input-sm selectpicker" data-live-search="true" data-bind="@info.GetComboDataSourceBinding(): @info.GetComboDataSource(true), optionsText : 'Text', optionsValue : 'Value', @(Model.FilterState == FilterState.EnableNotNull ? "":"optionsCaption: '-Все-', ")value:@($"{filterName}.Value")" autocomplete="off"></select>
+        break;
+    case RenderControl.Date:
+    case RenderControl.Time:
+        <div class="input-group">
+            <input class="form-control input-sm" data-bind="date: @($"{filterName}.Value")" data-field-type="date" type="text" @Html.Raw(info.GetHtmlAttributes())>        
+            <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+        </div>
+        break;
+    case RenderControl.DateTime:
+        <div class="input-group">
+            <input class="form-control input-sm" data-bind="date: @($"{filterName}.Value"), dateFormat: 'DD.MM.YYYY HH:mm'" data-field-type="date" type="text" @Html.Raw(info.GetHtmlAttributes())>
+            <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+        </div>
+        break;
+    case RenderControl.Decimal:
+        <input class="form-control input-sm" data-bind="numeric: @($"{filterName}.Value"), decimalPlaces: 2" data-field-type="decimal" type="text"/>
+        break;
+    case RenderControl.Integer:
+        <input class="form-control input-sm" data-bind="numeric: @($"{filterName}.Value")" data-field-type="integer" type="text">
+        break;
+    case RenderControl.YesNo:
+    case RenderControl.YesNoEmpty:
+        <select class="form-control input-sm" data-bind="options: [{Text:'Да',Value:true}, {Text:'Нет',Value:false}], optionsText : 'Text', optionsValue : 'Value', optionsCaption: '-Все-', value:@($"{filterName}.Value")" autocomplete="off"></select>
+        break;
+    case RenderControl.TextReferences:
+        {
+            var attribute = info.TextReferenceSource.GetTextReferenceAttribute();
+            <div class="input-group">
+                <input class="form-control input-sm" data-bind="value:@($"{filterName}.Value")" />
+                <span class="input-group-btn">
+                    <button type="button" class="btn btn-outline btn-default" data-bind="click:$root.selectTextReference.bind($data, @($"{filterName}.Value"),'@info.TextReferenceSource.ToString()', '@info.TextReferenceSource.GetDisplayName()', '@attribute.FilterPartialName', @("false"), $data,  @(string.IsNullOrEmpty(info.TextReference) ? "''" : info.TextReference) , '@attribute.Data', '@info.PropertyName', '@info.DependencyProperty' )">...</button>
+                </span>
+            </div>
+        }
+        break;
+    case RenderControl.TextReferenceValueText:
+    {
+        var filterTextSelector = $"text-reference-text-{filterName}";
+
+        var attribute = info.TextReferenceSource.GetTextReferenceAttribute();
+        <div class="input-group text-reference">
+            <input class="form-control input-sm @filterTextSelector" readonly="readonly" />
+            <input class="form-control input-sm" data-bind="value:@($"{filterName}.Value")" type="hidden" />
+            <span class="input-group-btn">
+                <button type="button" class="btn btn-sm btn-outline btn-default" data-bind="click:$root.selectTextReferenceValueText.bind($data, @($"{filterName}.Value"), null,'@info.TextReferenceSource.ToString()', '@info.TextReferenceSource.GetDisplayName()', '@attribute.FilterPartialName', @("false"), $element , '@filterTextSelector')">...</button>
+                <button type="button" class="btn btn-sm btn-outline btn-default" data-bind="click: function(data, event) { @($"{filterName}.Value(null);") jQuery('.@filterTextSelector').val(''); }"><em class="fa fa-times"></em></button>
+            </span>
+        </div>
+    }
+
+        break;
+    case RenderControl.TextArea:
+        <input class="form-control input-sm" data-bind="value:@($"{filterName}.Value")" />
+        break;
+    case RenderControl.Select:
+        break;
+    default:
+        <input class="form-control input-sm" data-bind="value:@($"{filterName}.Value")" />
+        break;
+}

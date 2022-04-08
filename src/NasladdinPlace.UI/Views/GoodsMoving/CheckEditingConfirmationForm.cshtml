@@ -1,0 +1,37 @@
+@using NasladdinPlace.UI.ViewModels.Shared.ModalWindow
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+@model NasladdinPlace.UI.ViewModels.Checks.CheckSummaryViewModel
+
+@await Html.PartialAsync("_ModalHeader", new ModalWindowHeader
+{
+    Heading = Localizer["Confirm check editing"].Value
+})
+
+<div class="modal-body form-horizontal">
+    <div class="container">
+        @{
+            if (@Model.RefundSum > 0 && @Model.AdditionOrVerificationSum > 0)
+            {
+                @:<p style="font-size: large;">@string.Format(Localizer["Save changes for refund and verification"].Value, Model.AdditionOrVerificationSum, Model.RefundSum)</p>
+            }
+            else if (@Model.RefundSum > 0)
+            {
+                @:<p style="font-size: large;">@string.Format(Localizer["Save changes for refund"].Value, Model.RefundSum)</p>
+            }
+            else if (@Model.AdditionOrVerificationSum > 0)
+            {
+                @:<p style="font-size: large;">@string.Format(Localizer["Save changes for verification"].Value, Model.AdditionOrVerificationSum)</p>
+            }
+            <p style="font-size: large;">@Localizer["Are you sure you want to save changes?"].Value</p>
+        }
+    </div>
+</div>
+
+@await Html.PartialAsync("_ModalFooter", new ModalWindowFooter
+{
+    CancelButtonText = Localizer["Cancel"].Value,
+    SubmitButtonText = Localizer["Save"].Value,
+    SubmitButtonClass = "btn-primary",
+    SubmitButtonId = "btn-submit-confirm"
+})

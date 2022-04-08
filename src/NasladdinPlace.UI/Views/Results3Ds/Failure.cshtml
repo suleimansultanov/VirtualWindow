@@ -1,0 +1,35 @@
+﻿@model NasladdinPlace.UI.ViewModels.Results3Ds.FailureResult3DsViewModel
+@using Microsoft.AspNetCore.Mvc.Localization
+
+@inject IViewLocalizer Localizer
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <title>@Localizer["Failure"].Value</title>
+
+    <environment names="Development">
+        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+    </environment>
+    <environment names="Staging,Production">
+        <link rel="stylesheet" href="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.6/css/bootstrap.min.css"
+              asp-fallback-href="~/lib/bootstrap/dist/css/bootstrap.min.css"
+              asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute" />
+    </environment>
+</head>
+<body>
+<div class="alert alert-danger" style="font-size: 18px">
+    <div>@Localizer["Your banking card confirmation has been failed!"].Value</div>
+    @if (Model.HasError)
+    {
+        <div>@Localizer["Error details: "].Value <strong>@Model.Error</strong></div>
+    }
+</div>
+</body>
+
+</html>

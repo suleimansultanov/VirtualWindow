@@ -1,0 +1,80 @@
+﻿.image-full {
+    width: 100%;
+}
+
+.vertical-align-div {
+    height: 5em;
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.bg-green-transparent {
+    background-color: #90c52d;
+}
+
+.bg-green {
+    background-color: #90c52d;
+}
+
+.green-text {
+    color: #90c52d;
+}
+
+.gray-text {
+    color: #9a9b9c;
+}
+
+.white-color {
+    color: #ffffff;
+}
+
+.p-l-0 {
+    padding-left: 0px;
+}
+
+.p-r-0 {
+    padding-right: 0px;
+}
+
+.bg-purple {
+    background-color: #7b68ee;
+}
+
+.bg-red {
+    background-color: #cd5c5c;
+}
+
+.bg-orange {
+    background-color: #d2691e;
+}
+
+.appstore-logo {
+    width: 24em;
+}
+
+.play-logo {
+    width: 30em;
+}
+
+.image-block {
+    position: relative;
+    padding: 0;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    text-align: center;
+    margin: 0 auto;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+}
+
+.image-block h3 {
+    position: absolute;
+    left: 5%;
+    top: 90%;
+    -webkit-transform: translateY(-50%);
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
+    color: #b0c4de;
+}

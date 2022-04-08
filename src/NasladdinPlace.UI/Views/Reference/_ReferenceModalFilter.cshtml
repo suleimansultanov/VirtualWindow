@@ -1,0 +1,67 @@
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@using NasladdinPlace.UI.Managers.Reference.Enums
+@using NasladdinPlace.UI.ViewModels.Base
+@inject IViewLocalizer Localizer
+
+@model UniReferenceViewModel<BaseViewModel>
+@{
+    string[] smartLayoutFilterNames =
+    {
+        "DateFrom", 
+        "DateTo", 
+        "DateTimeFrom", 
+        "DateTimeTo", 
+        "FilterPaymentCardCryptogramSource", 
+        "Status", 
+        "UserId", 
+        "PosId",
+        "HasUnverifiedCheckItems",
+        "HasFiscalizationInfoErrors"
+    };
+}
+
+<div class="modal" id="reference-filter-modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content animated fadeIn">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">@Localizer["Close"].Value</span></button>
+                <h4>@ViewBag.Title</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <!-- ko with: Filter -->
+                    @{
+                        var filters = Model.GetFilterInfo().Select(fi => fi.RenderInfo).ToList();
+                        var order = 0;
+                        filters.ForEach(x => { x.FilterOrder = order++; });
+                        filters.AddRange(Model.Configuration.Filters.Where(f => f.FilterState != FilterState.Disable));
+                    }
+                    @foreach (var filter in filters.OrderBy(f => f.FilterOrder))
+                    {
+                        if (Model.ContextFields != null && Model.ContextFields.Any(x => x == filter.PropertyName))
+                        {
+                            continue;
+                        }
+
+                        var isSmartFilter = filter.FilterName != null && 
+                                           (smartLayoutFilterNames.Contains(filter.FilterName) ||
+                                            filter.FilterName.Equals($"{filter.PropertyName}From") ||
+                                            filter.FilterName.Equals($"{filter.PropertyName}To"));
+
+                        <div class="@(isSmartFilter ? "col-lg-6" : "col-lg-12")">
+                            <div class="form-group row">
+                                <label class="custom-control-label col-lg-12">@filter.DisplayName</label>
+                                <div class="col-lg-12">@await Html.PartialAsync("Renderer/_renderFilters", filter)</div>
+                            </div>
+                        </div>
+                    }
+                    <!-- /ko -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-white" data-dismiss="modal">@Localizer["Cancel"].Value</button>
+                <button type="button" class="btn btn-primary" data-bind="click: submitModalFilter">@Localizer["Apply"].Value</button>
+            </div>
+        </div>
+    </div>
+</div>

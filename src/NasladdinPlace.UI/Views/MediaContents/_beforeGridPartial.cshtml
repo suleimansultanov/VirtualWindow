@@ -1,0 +1,111 @@
+﻿@using NasladdinPlace.UI.ViewModels.Base
+@using Microsoft.AspNetCore.Mvc.Localization
+@using NasladdinPlace.UI.Helpers
+@using NasladdinPlace.UI.ViewModels.Media
+@model UniReferenceViewModel<BaseViewModel>
+@inject IViewLocalizer Localizer
+
+@{
+    var saveButton = Localizer["Save"].Value;
+    var cancel = Localizer["Cancel"].Value;
+
+    var formRenderer = new FormRendererHelper<MediaContentViewModel>();
+}
+
+<link rel="stylesheet" href="~/lib/dropzone/css/basic.css" />
+<link rel="stylesheet" href="~/lib/dropzone/css/dropzone.css" />
+
+<div class="modal" id="add-media-modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content animated fadeIn">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4>@Localizer["AddTitle"].Value</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group row">
+                    <div class="col-lg-12"> 
+                        <form action="#" method="post" class="dropzone" id="customDropzone" enctype="multipart/form-data">
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-white" data-dismiss="modal">@cancel</button>
+                <button type="button" class="btn btn-primary" data-bind="click: saveMedia">@saveButton</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/lib/dropzone/dropzone.js"></script>
+<script>
+    window.getGridCustomHandler = function () {
+        return new GridCustomHandler(
+            vm => {
+                const modalId = "#add-media-modal";
+                const uploadImagesUrl = "/api/mediaContents";
+
+                Dropzone.autoDiscover = false;
+                const customDropzone = new Dropzone("#customDropzone", {
+                    url: uploadImagesUrl,
+                    parallelUploads: 10,
+                    autoProcessQueue: false,
+                    uploadMultiple: true,
+                    paramName: "files",
+                    maxFilesize: 5,
+                    dictCancelUpload: "",
+                    addRemoveLinks: true,
+                    dictDefaultMessage: "<em class=\'fa fa-cloud-upload fa-2x\'></em><br/><strong>@Html.Raw(Localizer["Drop files here or click to upload"].Value). </strong></br> (@Html.Raw(Localizer["Upload info"].Value))",
+                    dictRemoveFile: "@Html.Raw(Localizer["Remove"].Value)",
+                    init: function () {
+                        this.on("success", function (file, response) {
+                            bootstrapSuccess('@Html.Raw(Localizer["Uploading"].Value)',
+                                `@Html.Raw(Localizer["Images successfully uploaded"].Value): ${file.name}`);
+                        });
+                        this.on("queuecomplete",
+                                function() {
+                                    $(modalId).modal('hide');
+                                    vm.refresh();
+                                }),
+                            this.on("error",
+                                function(file, error, xhr) {
+                                    bootstrapErrorWithTitle(file.name, error.message);
+                                });
+                        this.on("complete",
+                            function(file) {
+                                customDropzone.removeFile(file);
+                            });
+                    }
+                });
+
+                vm.add = function() {
+                    $(modalId).modal();
+                }
+
+                vm.remove = function(item) {
+                    bootstrapConfirmDelete(
+                        '@Html.Raw(Localizer["Attention"].Value)',
+                        '@Html.Raw(Localizer["Confirming delete message"].Value)',
+                        function () {
+                            const url = '/api/mediaContents/' + item.MediaContentId();
+
+                            vm.serviceProxy.deleteJsonResult(url, {}, function (result) {
+                                if (result.error) {
+                                    bootstrapError(result.error);
+                                } else {
+                                    bootstrapSuccess('@Html.Raw(Localizer["Removing"].Value)', '@Html.Raw(Localizer["Media successfully removed"].Value)');
+                                    vm.refresh();
+                                }
+                            });
+                        });
+                }
+
+                vm.saveMedia = function() {
+                    customDropzone.processQueue();
+                    return;
+                }
+
+            });
+    };
+</script>

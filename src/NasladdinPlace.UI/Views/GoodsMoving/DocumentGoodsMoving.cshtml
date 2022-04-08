@@ -1,0 +1,213 @@
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@using NasladdinPlace.Core.Enums
+@using Newtonsoft.Json
+@using Newtonsoft.Json.Serialization
+@inject IViewLocalizer Localizer
+@model NasladdinPlace.UI.ViewModels.Documents.DocumentGoodsMovingViewModel
+
+@{
+    ViewData["Title"] = Localizer["GoodsMoving"].Value;
+}
+
+<div class="row row-eq-height wrapper border-bottom white-bg p-xs">
+    <div class="col-xs-7 col-sm-10" style="font-size: 14px;">
+        <ol class="breadcrumb" style="padding-top:5px;">
+            <li class="hidden-xs">
+                <a href="@Url.Action("All", "PointsOfSale")">@Localizer["Home"].Value</a>
+            </li>
+            <li class="hidden-xs">
+                <a href="@Url.Action("GetChecks","GoodsMoving")">@Localizer["GoodsMovingMain"]</a>
+            </li>
+            <li class="active">
+                <strong>@Localizer["GoodsMoving"]</strong>
+            </li>
+        </ol>
+    </div>
+</div>
+<div class="wrapper wrapper-content animated fadeIn">
+    @if (Model.User != null)
+    {
+        <div class="ibox float-e-margins m-b-sm">
+            <div class="ibox-title">
+                <h5>@Localizer["User Information"].Value</h5>
+            </div>
+            <div class="ibox-content">
+                <div class="row" style="margin:0;">
+                    <div class="col-md-1 col-sm-2 col-xs-12">
+                        <div class="text-center" style="display: table-cell; position: unset; height: 8em; width: 8em;">
+                            <div class="info-box-content" style="padding-top:1.5em;">
+                                <img alt="profile"
+                                     class="img-responsive circle-border gender-img"
+                                     style="border-color: #e5e6e7; border-width: 2px;"
+                                     src="~/images/@(Model.User.Gender == Gender.Undefined
+                                                         ? $"{Gender.Male}.svg"
+                                                         : $"{Model.User.Gender}.svg")" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-11 col-sm-10 col-xs-12" style="padding-left:1.5em;">
+                        <div class="text-left">
+                            <div class="info-box-content" style="padding-top:1.5em;">
+                                <strong class="text-center">@Localizer["Phone"].Value: </strong><span>@Model.User.PhoneNumber</span><br />
+                                <strong class="text-center">@Localizer["User name"].Value: </strong><span>@Model.User.UserName</span><br />
+                                <strong class="text-center">@Localizer["Email"].Value: </strong><span>@Model.User.Email</span><br />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    <div class="ibox float-e-margins">
+        <div class="ibox-title">
+            <div class="row">
+                <div class="col-md-8">
+                    <h5>@Localizer["DocumentGoodsMoving"].Value&nbsp;&mdash;&nbsp;@Localizer["PointOfSale"].Value:&nbsp;@Model.PosName</h5>
+                </div>
+            </div>
+        </div>
+        <div class="ibox-content">
+            <div class="row text-left">
+                <div>
+                    <span class="col-xs-6 col-md-4 text-left"><strong>@Localizer["Number"].Value</strong>:&nbsp;@Model.Id</span>
+                    <span class="col-xs-6 col-md-4 text-left"><strong>@Localizer["CreatedDate"].Value</strong>:&nbsp;@Model.CreatedDate</span>
+                </div>
+            </div>
+            <div class="row text-left" style="padding-bottom: 1em">
+                <div>
+                    <span class="col-xs-6 col-md-4 text-left"><strong>@Localizer["Author"].Value</strong>:&nbsp;@Model.User?.UserName</span>
+                    <span class="col-xs-6 col-md-4 text-left"><strong>@Localizer["ModifiedDate"].Value</strong>:&nbsp;@Model.ModifiedDate</span>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered table-hover" style="margin-bottom: 0px;" role="grid">
+                    <caption>&nbsp;</caption>
+                    <thead role="rowgroup">
+                        <tr role="row">
+                            <th role="columnheader" id="lineNum" class="text-left">@Localizer["LineNum"].Value</th>
+                            <th role="columnheader" id="goodCode" class="text-left">@Localizer["GoodCode"].Value</th>
+                            <th role="columnheader" id="goodName" class="text-left">@Localizer["GoodName"].Value</th>
+                            <th role="columnheader" id="balanceAtBegining" class="text-left">@Localizer["BalanceAtBegining"].Value</th>
+                            <th role="columnheader" id="income" class="text-left">@Localizer["Income"].Value</th>
+                            <th role="columnheader" id="outcome" class="text-left">@Localizer["Outcome"].Value</th>
+                            <th role="columnheader" id="balanceAtEnd" class="text-left">@Localizer["BalanceAtEnd"].Value</th>
+                        </tr>
+                    </thead>
+                    <tbody role="rowgroup">
+                        @if (Model.TablePart.Any())
+                        {
+                            <!-- ko foreach: tablePart -->
+                            <tr role="row" data-bind="style: {background: good === null ? 'rgba(255, 0, 0, 0.2)' : ''}">
+                                <td role="gridcell"><span data-bind="text: lineNum"></span></td>
+                                <!-- ko if : good === null -->
+                                <td role="gridcell"><span>&mdash;</span></td>
+                                <td role="gridcell"><span>@Localizer["UndefinedGood"].Value</span></td>
+                                <!-- /ko -->
+                                <!-- ko if : good !== null -->
+                                <td role="gridcell"><span data-bind="text: goodId"></span></td>
+                                <td role="gridcell"><a href="#" data-bind="text: good.name, attr: { href: '/Goods/EditGoodAsync/' + goodId }"></a></td>
+                                <!-- /ko -->
+                                <td role="gridcell"><span data-bind="text: balanceAtBegining"></span></td>
+                                <td role="gridcell">
+                                    <span>
+                                        <!-- ko if : income > 0 -->
+                                        <span style="color: #00a65a">+<span data-bind="text: income"></span></span>
+                                        <!-- /ko -->
+                                        <!-- ko if : income == 0 -->
+                                        <span>&nbsp;</span>
+                                        <!-- /ko -->
+                                    </span>
+                                </td>
+                                <td role="gridcell">
+                                    <span>
+                                        <!-- ko if : outcome > 0 -->
+                                        <span style="color: #dd4b39">-<span data-bind="text: outcome"></span></span>
+                                        <!-- /ko -->
+                                        <!-- ko if : outcome == 0 -->
+                                        <span>&nbsp;</span>
+                                        <!-- /ko -->
+                                    </span>
+                                </td>
+                                <td role="gridcell">
+                                    <span>
+                                        <!-- ko if : outcome > 0 || income > 0-->
+                                        <span style="color: #f39c12"><span data-bind="text: balanceAtEnd"></span></span>
+                                        <!-- /ko -->
+                                        <!-- ko if : outcome == 0 && income == 0-->
+                                        <span data-bind="text: balanceAtEnd"></span>
+                                        <!-- /ko -->
+                                    </span>
+                                </td>
+                            </tr>
+                            <!-- /ko -->
+                            <tr role="row" class="tr-bolded-italic">
+                                <td role="gridcell"><span>@Localizer["Summary"].Value</span></td>
+                                <td role="gridcell"><span></span></td>
+                                <td role="gridcell"><span></span></td>
+                                <td role="gridcell"><span>@Model.BalanceAtBeginingSum</span></td>
+                                <td role="gridcell">
+                                    <span>
+                                        <!-- ko if : incomeSum > 0 -->
+                                        <span style="color: #00a65a">+<span data-bind="text: incomeSum"></span></span>
+                                        <!-- /ko -->
+                                        <!-- ko if : incomeSum == 0 -->
+                                        <span data-bind="text: incomeSum"></span>
+                                        <!-- /ko -->
+                                    </span>
+                                </td>
+                                <td role="gridcell">
+                                    <span>
+                                        <!-- ko if : outcomeSum > 0 -->
+                                        <span style="color: #dd4b39">-<span data-bind="text: outcomeSum"></span></span>
+                                        <!-- /ko -->
+                                        <!-- ko if : outcomeSum == 0 -->
+                                        <span data-bind="text: outcomeSum"></span>
+                                        <!-- /ko -->
+                                    </span>
+                                </td>
+                                <td role="gridcell">
+                                    <span>
+                                        <!-- ko if : outcomeSum > 0 || incomeSum > 0-->
+                                        <span style="color: #f39c12"><span data-bind="text: balanceAtEndSum"></span></span>
+                                        <!-- /ko -->
+                                        <!-- ko if : outcomeSum == 0 && incomeSum == 0-->
+                                        <span data-bind="text: balanceAtEndSum"></span>
+                                        <!-- /ko -->
+                                    </span>
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            <tr role="row" class="text-center">
+                                <td role="gridcell" colspan="7">@Localizer["No records"].Value</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script type="text/javascript">
+        @{
+            var serializerSettings = new JsonSerializerSettings
+            {
+                ContractResolver = new CamelCasePropertyNamesContractResolver(),
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+            };
+        }
+
+        var documentGoodsMoving = @Html.Raw(JsonConvert.SerializeObject(Model, serializerSettings));
+        var documentGoodsMovingViewModel = new DocumentGoodsMovingViewModel(documentGoodsMoving);
+        ko.applyBindings(documentGoodsMovingViewModel);
+
+        function DocumentGoodsMovingViewModel(documentGoodsMoving) {
+            const self = this;
+
+            $.extend(self, documentGoodsMoving);
+        }
+    </script>
+}

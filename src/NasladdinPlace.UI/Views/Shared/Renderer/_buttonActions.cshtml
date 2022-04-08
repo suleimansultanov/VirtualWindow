@@ -1,0 +1,23 @@
+﻿@using NasladdinPlace.UI.Controllers.Base.Models
+@using NasladdinPlace.UI.Managers.Reference.Enums
+@model ConfigReference
+
+@if (Model?.Actions != null)
+{
+    foreach (var item in Model.Actions)
+    {
+        var classStyle = string.IsNullOrEmpty(item.ClassStyle) ? "btn-primary" : item.ClassStyle;
+        switch (item.Type)
+        {
+            case CommandType.OpenUrl:
+                <a class="btn btn-outline @classStyle" href="@item.Url">@Html.Raw(item.Name)</a>
+                break;
+            case CommandType.BlankOpenUrl:
+                <a class="btn btn-outline @classStyle" href="@item.Url" target="_blank">@Html.Raw(item.Name)</a>
+                break;
+            case CommandType.Custom:
+                <button type="button" class="btn btn-outline @classStyle" data-bind="@item.Binding">@Html.Raw(item.Name)</button>
+                break;
+        }
+    }
+}      

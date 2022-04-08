@@ -1,0 +1,10 @@
+const ConnectionConstants = function() {
+    const MILLIS_IN_SECOND = 1000;
+    
+    return {
+        KEEP_ALIVE_UPDATE_INTERVAL_IN_MILLIS: 60 * MILLIS_IN_SECOND,
+        RECONNECT_INTERVAL_IN_MILLIS: 5 * MILLIS_IN_SECOND,
+        DOOR_CLOSE_TIMER_DURATION_IN_SECONDS: 60,
+        INVENTORY_TIMER_DURATION_IN_SECONDS: 30
+    };
+}();

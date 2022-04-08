@@ -1,0 +1,303 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="City" xml:space="preserve">
+    <value>Город</value>
+  </data>
+  <data name="Close doors" xml:space="preserve">
+    <value>Закрыть Двери</value>
+  </data>
+  <data name="Configure antennas" xml:space="preserve">
+    <value>Настроить антенны</value>
+  </data>
+  <data name="Create periodic task" xml:space="preserve">
+    <value>Запустить тест</value>
+  </data>
+  <data name="Create POS" xml:space="preserve">
+    <value>Создать витрину</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Удалить</value>
+  </data>
+  <data name="Doors" xml:space="preserve">
+    <value>Двери</value>
+  </data>
+  <data name="Edit point of sale" xml:space="preserve">
+    <value>Редактирование витрины</value>
+  </data>
+  <data name="Goods" xml:space="preserve">
+    <value>Товары</value>
+  </data>
+  <data name="Latitude" xml:space="preserve">
+    <value>Широта</value>
+  </data>
+  <data name="Longitude" xml:space="preserve">
+    <value>Долгота</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Название</value>
+  </data>
+  <data name="Open left door" xml:space="preserve">
+    <value>Открыть Левую Дверь</value>
+  </data>
+  <data name="Open right door" xml:space="preserve">
+    <value>Открыть Правую Дверь</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Сохранить</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>Настройки</value>
+  </data>
+  <data name="Show content" xml:space="preserve">
+    <value>Содержимое витрины</value>
+  </data>
+  <data name="Overdue goods in point of sale" xml:space="preserve">
+    <value>Просроченные товары в витрине</value>
+  </data>
+  <data name="Street" xml:space="preserve">
+    <value>Улица</value>
+  </data>
+  <data name="Testing" xml:space="preserve">
+    <value>Тестирование</value>
+  </data>
+  <data name="Driver Logs" xml:space="preserve">
+    <value>Логи Драйвера</value>
+  </data>
+  <data name="Images" xml:space="preserve">
+    <value>Изображения</value>
+  </data>
+  <data name="Goods prices" xml:space="preserve">
+    <value>Товары и цены</value>
+  </data>
+  <data name="Logs" xml:space="preserve">
+    <value>Логи</value>
+  </data>
+  <data name="QR code" xml:space="preserve">
+    <value>QR код</value>
+  </data>
+  <data name="Labels detection statistics" xml:space="preserve">
+    <value>Статистика точности считывания меток</value>
+  </data>
+  <data name="Condition monitoring" xml:space="preserve">
+    <value>Мониторинг состояния</value>
+  </data>
+  <data name="Temperature state" xml:space="preserve">
+    <value>Температурный режим</value>
+  </data>
+  <data name="Show сontent by type of good" xml:space="preserve">
+    <value>Содержимое витрины по типу товара</value>
+  </data>
+  <data name="Actions" xml:space="preserve">
+    <value>Действия</value>
+  </data>
+  <data name="Assign labels to good" xml:space="preserve">
+    <value>Идентификация</value>
+  </data>
+  <data name="Placing mode" xml:space="preserve">
+    <value>Режим размещения</value>
+  </data>
+  <data name="Tools" xml:space="preserve">
+    <value>Инструменты</value>
+  </data>
+  <data name="Home" xml:space="preserve">
+    <value>Домой</value>
+  </data>
+  <data name="Interface" xml:space="preserve">
+    <value>Карточка витрины</value>
+  </data>
+  <data name="Allowed modes" xml:space="preserve">
+    <value>Разрешенные режимы</value>
+  </data>
+  <data name="Purchase" xml:space="preserve">
+    <value>Покупка</value>
+  </data>
+  <data name="GoodsIdentification" xml:space="preserve">
+    <value>Идентификация</value>
+  </data>
+  <data name="GoodsPlacing" xml:space="preserve">
+    <value>Размещение</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Отменить</value>
+  </data>
+  <data name="Media content" xml:space="preserve">
+    <value>Медиа контент</value>
+  </data>
+  <data name="Abbreviated name" xml:space="preserve">
+    <value>Код витрины</value>
+  </data>
+  <data name="Notification" xml:space="preserve">
+    <value>Оповещение</value>
+  </data>
+  <data name="Abnormal sensors measurements history" xml:space="preserve">
+    <value>История измерений датчиков, отличных от нормы</value>
+  </data>
+  <data name="Disabled" xml:space="preserve">
+    <value>Выкл.</value>
+  </data>
+  <data name="Enabled" xml:space="preserve">
+    <value>Вкл.</value>
+  </data>
+  <data name="Save success" xml:space="preserve">
+    <value>Данные о витрине были успешно изменены!</value>
+  </data>
+  <data name="Sensors controller type" xml:space="preserve">
+    <value>Тип контроллера</value>
+  </data>
+  <data name="Required screen resolution" xml:space="preserve">
+    <value>Требуемое разрешение экрана</value>
+  </data>
+  <data name="Select" xml:space="preserve">
+    <value>Выбрать</value>
+  </data>
+  <data name="QR code generation type" xml:space="preserve">
+    <value>Тип генерации QR кода</value>
+  </data>
+  <data name="Static" xml:space="preserve">
+    <value>Статический</value>
+  </data>
+  <data name="Dynamic" xml:space="preserve">
+    <value>Динамический</value>
+  </data>
+  <data name="Not found" xml:space="preserve">
+    <value>Упс, ничего не нашёл!</value>
+  </data>
+  <data name="Placeholder" xml:space="preserve">
+    <value>Пожалуйста выберите роли, которым будут доступны действия над витриной</value>
+  </data>
+  <data name="Roles" xml:space="preserve">
+    <value>Доступ</value>
+  </data>
+  <data name="Save error" xml:space="preserve">
+    <value>Упссс! Произошла ошибка.</value>
+  </data>
+  <data name="Accurate location" xml:space="preserve">
+    <value>Подсказка о расположении (как найти)</value>
+  </data>
+  <data name="Is restricted access" xml:space="preserve">
+    <value>Ограниченный доступ</value>
+  </data>
+  <data name="Corporate" xml:space="preserve">
+    <value>КОРП</value>
+  </data>
+  <data name="Pos activity status" xml:space="preserve">
+    <value>Режим эксплуатации</value>
+  </data>
+</root>

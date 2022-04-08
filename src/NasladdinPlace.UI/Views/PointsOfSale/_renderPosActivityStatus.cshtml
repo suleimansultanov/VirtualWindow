@@ -1,0 +1,6 @@
+﻿@using NasladdinPlace.Core.Enums
+@using NasladdinPlace.Utilities.EnumHelpers
+<span data-bind="if: $data.PosActivityStatus() == '@((int)PosActivityStatus.Inactive)'" class="text-muted"><em class="glyphicon glyphicon-remove-sign"></em>&nbsp;<text>@(PosActivityStatus.Inactive.GetDescription())</text></span>
+<span data-bind="if: $data.PosActivityStatus() == '@((int)PosActivityStatus.Active)'" class="text-green"><em class="glyphicon glyphicon-ok-circle"></em>&nbsp;<text>@(PosActivityStatus.Active.GetDescription())</text></span>
+<span data-bind="if: $data.PosActivityStatus() == '@((int)PosActivityStatus.Test)'" class="text-warning"><em class="glyphicon glyphicon-warning-sign"></em>&nbsp;<text>@(PosActivityStatus.Test.GetDescription())</text></span>
+

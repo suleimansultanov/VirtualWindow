@@ -1,0 +1,196 @@
+﻿@using System.Globalization
+@using Microsoft.AspNetCore.Mvc.Localization
+@using NasladdinPlace.Core.Models
+@using NasladdinPlace.UI.ViewModels.Shared.ModalWindow
+@using NasladdinPlace.UI.ViewModels.Checks;
+@using NasladdinPlace.Utilities.DateTimeConverter
+
+@inject IViewLocalizer Localizer
+
+@model ChecksViewModel
+
+@{
+    ViewData["Title"] = Localizer["Checks"].Value;
+}
+
+
+<div class="row row-eq-height wrapper border-bottom white-bg p-sm">
+    <div class="col-xs-9 col-sm-10">
+        <ol class="breadcrumb">
+            <li class="hidden-xs">
+                <a href="@Url.Action("All", "PointsOfSale")">@Localizer["Home"].Value</a>
+            </li>
+            <li class="active">
+                <strong>@ViewData["Title"]</strong>
+            </li>
+        </ol>
+    </div>
+    <div class="col-xs-3 col-sm-2">
+    </div>
+</div>
+
+<div class="wrapper wrapper-content animated fadeIn" id="shopping-statistics">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-content">
+                    <div class="ibox-tools">
+                        <form asp-controller="GoodsMoving" asp-action="GetChecks" method="get" role="search">
+                            <input asp-for="Criteria.Page" class="hidden" />
+                            <input asp-for="Criteria.PageSize" class="hidden" />
+                            <div class="row ">
+                                <div class="col-sm-5" style="padding-right: 0">
+                                    <div class="input-daterange" id="datepicker">
+                                        <div class="form-group col-sm-6">
+                                            <div class="input-group">
+                                                <span class="input-group-addon">@Localizer["From"].Value</span>
+                                                <div class="input-group date" id="criteria-date-from-picker">
+                                                    <input asp-for="Criteria.DateTimeFrom" class="form-control" placeholder="13/04/2018" />
+                                                    <span class="input-group-addon">
+                                                        <span class="glyphicon glyphicon-calendar"></span>
+                                                    </span>
+                                                </div>
+                                                <span asp-validation-for="Criteria.DateTimeFrom" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                        <div class="form-group col-sm-6">
+                                            <div class="input-group">
+                                                <span class="input-group-addon">@Localizer["Until"].Value</span>
+                                                <div class="input-group date" id="criteria-date-until-picker">
+                                                    <input asp-for="Criteria.DateTimeUntil" class="form-control" placeholder="22/05/2018" />
+                                                    <span class="input-group-addon">
+                                                        <span class="glyphicon glyphicon-calendar"></span>
+                                                    </span>
+                                                </div>
+                                                <span asp-validation-for="Criteria.DateTimeUntil" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-3">
+                                    <div class="form-group">
+                                        <input asp-for="Criteria.UserName" type="text" class="form-control" placeholder="@Localizer["User name"].Value" />
+                                    </div>
+                                </div>
+                                <div class="col-sm-3">
+                                    <div class="form-group">
+                                        <select asp-for="Criteria.PlantId" asp-items="@Model.Criteria.PlantSelectList" class="form-control">
+                                            <option selected>@Localizer["All points of sale"].Value</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-sm-1">
+                                    <div class="form-group">
+                                        <button type="submit" class="btn btn-block btn-primary">
+                                            <span class="glyphicon glyphicon-search"></span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <input name="__RequestVerificationToken" type="hidden" value="CfDJ8H7iht-j7TNDrbHF6zZzlgZ6EWxP1BiVCwJpjsnLGXWrWBX2pD6TWstlTxMPvUHIcIpJeBRv7H1-tI7LKp7GlxXNwcy2iqcQ1u6T7rM_bITkCL55m2JE0UvK0CKvcCwko-cEksQTSmRzZYncqyykP-jCm2XF5utv4mm9t15lPKbmCozbxtCHg12MXalYiBNs-w">
+                        </form>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-bordered" role="grid">
+                            <caption>&nbsp;</caption>
+                            <thead role="rowgroup">
+                                <tr role="row">
+                                    <th role="columnheader" id="purchaseDate" class="text-center col-md-2">@Localizer["Purchase date"].Value</th>
+                                    <th role="columnheader" id="userName" class="text-center col-md-2">@Localizer["User name"].Value</th>
+                                    <th role="columnheader" id="pointOfSale" class="text-center col-md-2">@Localizer["Point of sale"].Value</th>
+                                    <th role="columnheader" id="purchaseAmount" class="text-center col-md-1">@Localizer["Purchase amount"].Value</th>
+                                    <th role="columnheader" id="bonus" class="text-center col-md-1">@Localizer["Bonus"].Value</th>
+                                    <th role="columnheader" id="actualPaymentAmount" class="text-center col-md-1">@Localizer["Actual payment amount"].Value</th>
+                                    <th role="columnheader" id="statusOperation" class="text-center col-md-offset-1">@Localizer["Status operation"].Value</th>
+                                    <th role="columnheader" id="actions" class="text-center col-md-offset-1">@Localizer["Actions"].Value</th>
+                                </tr>
+                            </thead>
+                            <tbody role="rowgroup">
+                                @foreach (var detailedCheck in Model.DetaledChecks.Content)
+                                {
+                                    <tr role="row">
+                                        <td role="gridcell" class="text-center">
+                                            @(UtcMoscowDateTimeConverter.ConvertToMoscowDateTime(detailedCheck.DateStatusUpdated).ToString(new CultureInfo("ru")))
+                                        </td>
+                                        <td role="gridcell" class="text-center">@detailedCheck.UserInfo.UserName</td>
+                                        <td role="gridcell" class="text-center">@detailedCheck.PosInfo.PosName</td>
+                                        <td role="gridcell" class="text-center">@detailedCheck.Summary.ActualTotalPrice</td>
+                                        <td role="gridcell" class="text-center">@detailedCheck.Summary.Bonus</td>
+                                        <td role="gridcell" class="text-center">@(Math.Max(detailedCheck.Summary.ActualTotalPrice - detailedCheck.Summary.Bonus, 0))</td>
+                                        <td role="gridcell" class="text-center">@Localizer[detailedCheck.Status.ToString()].Value</td>
+                                        <td role="gridcell" class="text-center">
+                                            <a asp-controller="GoodsMoving" asp-action="Details" asp-route-operationId="@detailedCheck.Id" class="btn-link">
+                                                <span class="glyphicon glyphicon-edit"></span><span>&nbsp;@Localizer["Edit"].Value</span>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                @if (Model.CurrentReport.HasPreviousPage || Model.CurrentReport.HasNextPage)
+                {
+                    <nav aria-label="...">
+                        <ul class="pager">
+                            @if (Model.CurrentReport.HasPreviousPage)
+                            {
+                                <li class="previous">
+                                    <a asp-controller="GoodsMoving"
+                                       asp-action="GetChecks"
+                                       asp-route-page="@(Model.Criteria.Page - 1)"
+                                       asp-route-pageSize="@Model.Criteria.PageSize"
+                                       asp-route-plantId="@Model.Criteria.PlantId"
+                                       asp-route-dateTimeFrom="@Model.Criteria.DateTimeFrom"
+                                       asp-route-dateTimeUntil="@Model.Criteria.DateTimeUntil"
+                                       asp-route-userName="@Model.Criteria.UserName">
+                                        <span aria-hidden="true">&larr;</span> @Localizer["Previous"].Value
+                                    </a>
+                                </li>
+                            }
+                            @if (Model.CurrentReport.HasNextPage)
+                            {
+                                <li class="next">
+                                    <a asp-controller="GoodsMoving"
+                                       asp-action="GetChecks"
+                                       asp-route-page="@(Model.Criteria.Page + 1)"
+                                       asp-route-pageSize="@Model.Criteria.PageSize"
+                                       asp-route-plantId="@Model.Criteria.PlantId"
+                                       asp-route-dateTimeFrom="@Model.Criteria.DateTimeFrom"
+                                       asp-route-dateTimeUntil="@Model.Criteria.DateTimeUntil"
+                                       asp-route-userName="@Model.Criteria.UserName">
+                                        @Localizer["Next"].Value <span aria-hidden="true">&rarr;</span>
+                                    </a>
+                                </li>
+                            }
+                        </ul>
+                    </nav>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <link type="text/css" rel="stylesheet" href="~/css/bootstrap-datetimepicker.min.css"/>
+    <script type="text/javascript" src="~/lib/moment/min/moment.min.js"></script>
+    <script type="text/javascript" src="~/lib/moment/locale/ru.js"></script>
+    <script type="text/javascript" src="~/lib/eonasdan-bootstrap-datetimepicker/src/js/bootstrap-datetimepicker.js"></script>
+    <script type="text/javascript">
+
+        ShoppingStatisticsController.initialize(document);
+
+        $(document).ready(function() {
+            var datePickerSettings = {
+                locale: 'ru',
+                format: 'DD/MM/YYYY HH:mm',
+                useCurrent: false
+            };
+
+            $('#criteria-date-from-picker').datetimepicker(datePickerSettings);
+
+            $('#criteria-date-until-picker').datetimepicker(datePickerSettings);
+        });
+    </script>
+}

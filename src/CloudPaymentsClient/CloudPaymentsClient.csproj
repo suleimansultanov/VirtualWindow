@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <CodeAnalysisRuleSet>CloudPaymentsClient.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <CodeAnalysisRuleSet>CloudPaymentsClient.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Refit" Version="5.0.23" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\NasladdinPlace.CloudPaymentsCore\NasladdinPlace.CloudPaymentsCore.csproj" />
+    <ProjectReference Include="..\..\NasladdinPlace.Fiscalization\NasladdinPlace.Fiscalization.csproj" />
+    <ProjectReference Include="..\NasladdinPlace.Payment\NasladdinPlace.Payment.csproj" />
+  </ItemGroup>
+</Project>

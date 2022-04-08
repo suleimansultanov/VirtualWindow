@@ -1,0 +1,552 @@
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@using NasladdinPlace.Core.Enums
+@using NasladdinPlace.Core.Models
+@using NasladdinPlace.UI.ViewModels.Shared.ModalWindow
+@using Newtonsoft.Json
+@using Newtonsoft.Json.Serialization
+@using NasladdinPlace.UI.Helpers
+
+@inject IViewLocalizer Localizer
+@model NasladdinPlace.UI.ViewModels.Checks.DetailedCheckViewModel
+
+@{
+    ViewData["Title"] = Localizer["Edit details check"].Value;
+}
+
+<div class="row row-eq-height wrapper border-bottom white-bg p-sm">
+    <div class="col-xs-9 col-sm-10">
+        <ol class="breadcrumb">
+            <li class="hidden-xs">
+                <a href="@Url.Action("All","PointsOfSale")">@Localizer["Home"].Value</a>
+            </li>
+            <li class="hidden-xs">
+                <a asp-controller="GoodsMoving" asp-action="GetChecks">@Localizer["GoodsMoving"]</a>
+            </li>
+            <li class="active">
+                <strong>@ViewData["Title"]</strong>
+            </li>
+        </ol>
+    </div>
+    <div class="col-xs-3 col-sm-2">
+    </div>
+</div>
+@await Html.PartialAsync("_bankTransactionsPartial")
+@await Html.PartialAsync("_fiscalizationChecksPartial")
+<div class="wrapper wrapper-content animated fadeIn" id="check-items-info-and-spinner">
+    <div class="sk-spinner sk-spinner-double-bounce">
+        <div class="sk-double-bounce1"></div>
+        <div class="sk-double-bounce2"></div>
+    </div>
+    <div class="row">
+    <div class="col-lg-12" id="detailed-check">
+        @if (Model.User != null)
+        {
+            <div class="ibox float-e-margins m-b-sm">
+               <div class="ibox-title">
+                    <h5>@Localizer["User Information"].Value</h5>
+                </div>
+                <div class="ibox-content">
+                    <div class="row" style="margin:0;">
+                        <div class="col-md-1 col-sm-2 col-xs-12">
+                            <div class="text-center" style="display: table-cell; position: unset; height: 8em; width: 8em;">
+                                <div class="info-box-content" style="padding-top:1.5em;">
+                                    <img alt="profile"
+                                         class="img-responsive circle-border gender-img"
+                                         style="border-color: #e5e6e7; border-width: 2px;"
+                                         src="~/images/@(Model.User.Gender == Gender.Undefined
+                                                             ? $"{Gender.Male}.svg"
+                                                             : $"{Model.User.Gender}.svg")" />
+                                </div>
+                                </div>
+                            </div>
+                        <div class="col-md-11 col-sm-10 col-xs-12" style="padding-left:1.5em;">
+                            <div class="text-left">
+                                <div class="info-box-content" style="padding-top:1.5em;">
+                                    <strong class="text-center">@Localizer["Phone"].Value: </strong><span>@Model.User.PhoneNumber</span><br/>
+                                    <strong class="text-center">@Localizer["User name"].Value: </strong><span>@Model.User.UserName</span><br/>
+                                    <strong class="text-center">@Localizer["Email"].Value: </strong><span>@Model.User.Email</span><br />
+                                    <strong class="text-center">@Localizer["Bonuses"].Value: </strong><span>@(Model.User.TotalBonus ?? 0M)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        <div class="ibox float-e-margins m-b-sm">
+            <div class="ibox-title">
+                <h5>@Localizer["Panel settings"].Value</h5>
+            </div>
+            <div class="ibox-content">
+                <div class="form-inline" style="text-align: right">
+                    <div class="form-group">
+                        <div class="col-sm-3">
+                            <!-- ko if: hasModifiedCheckGoodInstances() -->
+                            <a herf="#"
+                               class="btn btn-danger btn-outline"
+                               data-bind="click: cancelCheckGoodInstancesModification">
+                                <em class="glyphicon glyphicon-remove"></em>&#8195 @Localizer["Cancel"].Value
+                            </a>
+                            <!-- /ko -->
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-3">
+                            <!-- ko if: hasModifiedCheckGoodInstances() -->
+                            <a data-bind="attr: {href: '/GoodsMoving/CheckEditingConfirmationDialog?refundSum='+(parseFloat(formattedTotalRefundSumInMoney())*100)+'&additionOrVerificationSum='+(parseFloat(formattedActualPaymentAmount())*100)}"
+                               class="btn btn-primary btn-outline"
+                               data-target="#shopping-check-modal"
+                               data-toggle="modal">
+                                <em class="glyphicon glyphicon-ok-sign"></em>&#8195 @Localizer["Save"].Value
+                            </a>
+                            <!-- /ko -->
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-3">
+                            <!-- ko if: !hasUnverifiedInstances() -->
+                            <a asp-controller="GoodsMoving"
+                               asp-action="CheckEditingConfirmationDialog"
+                               class="btn btn-primary btn-outline"
+                               data-target="#shopping-check-modal"
+                               data-toggle="modal">
+                                <em class="glyphicon glyphicon-ok-sign"></em>&#8195 @Localizer["Confirm"].Value
+                            </a>
+                            <!-- /ko -->
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-3">
+                            <a asp-controller="GoodsMoving" class="btn btn-primary btn-outline"
+                               asp-action="Add"
+                               asp-route-operationId="@Model.Check.Id"
+                               data-target="#shopping-check-modal"
+                               data-toggle="modal"><em class="glyphicon glyphicon-plus-sign"></em>&#8195 @Localizer["Add"].Value</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <div class="ibox float-e-margins m-b-sm">
+    <div class="ibox-title">
+        <div class="row p-xxs">
+            <div>
+                <strong class="col-xs-12 col-md-4 text-center">@Localizer["Point of Sale"].Value:&nbsp @Model.Check.PosInfo.PosName</strong>
+                <strong class="col-xs-12 col-md-4 text-center">@Localizer["Date"].Value:&nbsp @Model.Check.DateStatusUpdated</strong>
+                <strong class="col-xs-12 col-md-4 text-center">@Localizer["Operation Status"].Value:&nbsp @Localizer[Model.Check.Status.ToString()].Value</strong>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4 col-sm-4 col-xs-12">
+                <div class="bg-red text-center">
+                    <div class="info-box-content">
+                        <span class="info-box-text">@($"{Localizer["Deleted"].Value}: {@Model.Check.Statistics.CheckItemsDeleted} {Localizer["pc."].Value}")</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 col-sm-4 col-xs-12">
+                <div class="bg-yellow text-center">
+                    <div class="info-box-content">
+                        <span class="info-box-text">@($"{Localizer["Refunded"].Value}: {@Model.Check.Statistics.CheckItemsRefunded} {Localizer["pc."].Value}")</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 col-sm-4 col-xs-12">
+                <div class="bg-green text-center">
+                    <div class="info-box-content">
+                        <span class="info-box-text">@($"{Localizer["Modified"].Value}: {@Model.Check.Statistics.CheckItemsModifiedByAdmin} {Localizer["pc."].Value}")</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="ibox-content">
+    <div class="table-responsive">
+        <table class="table table-bordered" role="grid">
+            <caption>&nbsp;</caption>
+            <thead role="rowgroup">
+                <tr role="row">
+                    <th role="columnheader" id="artical" class="text-center">@Localizer["Artical"].Value</th>
+                    <th role="columnheader" id="price" class="text-center">@Localizer["Price"].Value</th>
+                    <th role="columnheader" id="status" class="text-center">@Localizer["Status"].Value</th>
+                    <th role="columnheader" id="isInside" class="text-center">@Localizer["Is Inside"].Value</th>
+                    @if (Model.Check.Summary.HasUnverifiedItems)
+                    {
+                        <th role="columnheader" id="additionalInfo" class="text-center">@Localizer["Additional info"].Value</th>
+                    }
+                    <th role="columnheader" id="actions" class="text-center">@Localizer["Actions"].Value</th>
+                </tr>
+            </thead>
+            <tbody role="rowgroup">
+                @if (Model.Check.CheckGoods.Any())
+                {
+                    <!-- ko foreach: checkGoods -->
+                    <!-- ko foreach: instances -->
+                    <tr role="row">
+                        <td role="gridcell" class="text-center">
+                            <!-- ko if: isModifiedByAdmin -->
+                            <em class="fa fa-check-circle" style="color: #0ba75e"></em>
+                            <!-- /ko -->
+                            <a href="#"
+                               data-bind="text: $parent.name, attr: { href: '/LabeledGoods/EditLabeledGoodAsync/' + labeledGoodInfo.id() }"></a>
+                        </td>
+                        <td role="gridcell" class="text-center"><span data-bind="text: price"></span></td>
+                        <td role="gridcell" class="text-center">
+
+                        <!-- ko if: status == @((int) CheckItemStatus.Unverified) || status == @((int) CheckItemStatus.PaidUnverified) -->
+                        @{
+                            var labeledGoodTrackingRecordHistoryBaseUrl =
+                                Url.Action("TrackingHistory", "LabeledGoods") + $"?{nameof(TrackingHistoryLabeledGoodsFiltersContext.Id)}=";
+                        }
+                            <a class="text-danger"
+                               data-bind="attr: { href: '@labeledGoodTrackingRecordHistoryBaseUrl' + labeledGoodInfo.id() }">
+                                <!-- ko ifnot: isStatusModified() -->
+                            <!-- ko if: status == @((int) CheckItemStatus.Unverified) -->
+                            @Localizer[CheckItemStatus.Unverified.ToString()].Value
+                            <!-- /ko -->
+                            <!-- ko if: status == @((int) CheckItemStatus.PaidUnverified) -->
+                            @Localizer[CheckItemStatus.PaidUnverified.ToString()].Value
+                            <!-- /ko -->
+                            <!-- /ko -->
+                            </a>
+
+                        <!-- /ko -->
+                        @foreach (var checkItemStatus in EnumUtilities.GetEnumValuesExcept(CheckItemStatus.Unverified, CheckItemStatus.PaidUnverified))
+                        {
+                            <!-- ko if: (modifiedStatus() != @((int) CheckItemStatus.Unverified) || modifiedStatus() != @((int) CheckItemStatus.PaidUnverified)) && modifiedStatus() == @((int) checkItemStatus) -->
+                            <!-- ko if: isStatusModified() -->
+                            <span class="text-info">@Localizer[$"Will be {checkItemStatus.ToString().ToLower()}"].Value</span>
+                            <!-- /ko -->
+                            <!-- ko ifnot: isStatusModified() -->
+                            @Localizer[checkItemStatus.ToString()].Value
+                            <!-- /ko -->
+                            <!-- /ko -->
+                        }
+        </td>
+        <td role="gridcell" class="text-center">
+            <!-- ko with: labeledGoodInfo -->
+            <!-- ko if: isInside() && hasPosInfo() -->
+            <!-- ko with: $data.posInfo -->
+            @{
+                var posBaseUrl = Url.Action("EditPos", "PointsOfSale") + "/";
+            }
+            <a href="#" data-bind="text: $data.posName, attr: { href: '@posBaseUrl' + $data.posId() }"></a>
+            <!-- /ko -->
+            <!-- /ko -->
+            <!-- ko ifnot: isInside() && hasPosInfo() -->
+            @Localizer["False"].Value
+            <!-- /ko -->
+            <!-- /ko -->
+        </td>
+        @if (Model.Check.Summary.HasUnverifiedItems)
+        {
+            <!-- ko with: labeledGoodInfo -->
+            <td role="gridcell">
+                <!-- ko if: $parent.status == @((int) CheckItemStatus.Unverified) || $parent.status == @((int) CheckItemStatus.PaidUnverified) -->
+                <ul>
+                    <!-- ko if: $data.foundDateTime -->
+                    <li>
+                        @Localizer["Label found date"].Value:
+                        <span data-bind="text: $data.foundDateTime"></span>
+                    </li>
+                    <li>
+                        @Localizer["Label was found"].Value
+                        <!-- ko if: $data.durationBetweenFoundDateAndCheckDate.days > 0 -->
+                        <span data-bind="text: $data.durationBetweenFoundDateAndCheckDate.days"></span> @Localizer["days"].Value
+                        <!-- /ko -->
+                        <!-- ko if: $data.durationBetweenFoundDateAndCheckDate.hours > 0 -->
+                        <span data-bind="text: $data.durationBetweenFoundDateAndCheckDate.hours"></span> @Localizer["hours"].Value
+                        <!-- /ko -->
+                        <!-- ko if: $data.durationBetweenFoundDateAndCheckDate.minutes > 0 -->
+                        <span data-bind="text: $data.durationBetweenFoundDateAndCheckDate.minutes"></span> @Localizer["minutes"].Value
+                        <!-- /ko -->
+                        <!-- ko if: $data.durationBetweenFoundDateAndCheckDate.seconds > 0 -->
+                        <span data-bind="text: $data.durationBetweenFoundDateAndCheckDate.seconds"></span> @Localizer["seconds"].Value
+                        <!-- /ko -->
+                        <!-- ko if: $data.durationBetweenFoundDateAndCheckDate.isNegative -->
+                        @Localizer["before the purchase"]
+                        <!-- /ko -->
+                        <!-- ko ifnot: $data.durationBetweenFoundDateAndCheckDate.isNegative -->
+                        @Localizer["after the purchase"]
+                        <!-- /ko -->
+                    </li>
+                    <!-- /ko -->
+                    <!-- ko if: $data.lostDateTime -->
+                    <li>
+                        @Localizer["Label loss date"].Value:
+                        <span data-bind="text: $data.lostDateTime"></span>
+                    </li>
+                    <li>
+                        @Localizer["Label was lost"].Value
+                        <!-- ko if: $data.durationBetweenLostDateAndCheckDate.days > 0 -->
+                        <span data-bind="text: $data.durationBetweenLostDateAndCheckDate.days"></span> @Localizer["days"].Value
+                        <!-- /ko -->
+                        <!-- ko if: $data.durationBetweenLostDateAndCheckDate.hours > 0 -->
+                        <span data-bind="text: $data.durationBetweenLostDateAndCheckDate.hours"></span> @Localizer["hours"].Value
+                        <!-- /ko -->
+                        <!-- ko if: $data.durationBetweenLostDateAndCheckDate.minutes > 0 -->
+                        <span data-bind="text: $data.durationBetweenLostDateAndCheckDate.minutes"></span> @Localizer["minutes"].Value
+                        <!-- /ko -->
+                        <!-- ko if: $data.durationBetweenLostDateAndCheckDate.seconds > 0 -->
+                        <span data-bind="text: $data.durationBetweenLostDateAndCheckDate.seconds"></span> @Localizer["seconds"].Value
+                        <!-- /ko -->
+                        <!-- ko if: $data.durationBetweenLostDateAndCheckDate.isNegative -->
+                        @Localizer["before the purchase"]
+                        <!-- /ko -->
+                        <!-- ko ifnot: $data.durationBetweenLostDateAndCheckDate.isNegative -->
+                        @Localizer["after the purchase"]
+                        <!-- /ko -->
+                    </li>
+                    <!-- /ko -->
+                </ul>
+                <!-- /ko -->
+            </td>
+            <!-- /ko -->
+        }
+        <td role="gridcell">
+            <!-- ko if: isDeletionAllowed() -->
+            <div>
+                <button type="button" class="btn btn-danger btn-outline" data-bind="click: markAsDeleted">
+                    <em class="glyphicon glyphicon-trash"></em>&#8195 @Localizer["Delete"].Value
+                </button>
+            </div>
+            <!-- /ko -->
+            <!-- ko if: isRefundAllowed() -->
+            <div>
+                <button type="button" class="btn btn-danger btn-outline" data-bind="click: markAsRefunded">
+                    <em class="glyphicon glyphicon-trash"></em>&#8195 @Localizer["Refund good"].Value
+                </button>
+            </div>
+            <!-- /ko -->
+            <!-- ko if: isConfirmationAllowed() -->
+            <div>
+                <button type="button" class="btn btn-primary btn-outline" data-bind="click: markAsConfirmed">
+                    <em class="glyphicon glyphicon glyphicon-ok-sign"></em>&#8195 @Localizer["Confirm good"].Value
+                </button>
+            </div>
+            <!-- /ko -->
+            <!-- ko if: isStatusModified() -->
+            <div>
+                <button type="button" class="btn btn-danger btn-outline" data-bind="click: cancelStatusModification">
+                    <em class="glyphicon glyphicon glyphicon-remove"></em>&#8195 @Localizer["Cancel"].Value
+                </button>
+            </div>
+            <!-- /ko -->
+        </td>
+        </tr>
+        <!-- /ko -->
+        <!-- /ko -->
+    }
+    else
+    {
+        <tr role="row">
+            <td role="gridcell" colspan="7" class="text-center">@Localizer["Empty table"].Value</td>
+        </tr>
+    }
+            </tbody>
+        </table>
+    </div>
+    <div class="row p-md" style="font-size: 14px;">
+        <div>
+            <div class="row">
+                <div class="px-4 text-left col-xs-6">
+                    <strong>@Localizer["Total cost"].Value:</strong>
+                </div>
+                <div id="amount" class="px-4 text-right col-xs-6" data-bind="text: formattedTotalPaymentAmount()"></div>
+            </div>
+            <div class="row">
+                <div class="px-4 text-left col-xs-6">
+                    <strong>@Localizer["Discount in bounuses"].Value:</strong>
+                </div>
+                <div id="bonus" class="px-4 text-right col-xs-6" data-bind="text: formattedTotalBonuses()"></div>
+            </div>
+            <div class="row">
+                <div class="px-4 text-left col-xs-6">
+                    <strong>@Localizer["Discount"].Value:</strong>
+                </div>
+                <div class="px-4 text-right col-xs-6" data-bind="text: formattedActualTotalDiscount()"></div>
+            </div>
+            <hr/>
+            <div class="row">
+                <div class="px-4 text-left col-xs-6">
+                    <strong>@Localizer["Actual Payment Amount"].Value:</strong>
+                </div>
+                <div class="px-4 text-right col-xs-6" data-bind="text: formattedActualPaymentAmount()"></div>
+            </div>
+            <div class="row">
+                <div class="px-4 text-left col-xs-6">
+                    <strong>@Localizer["Total refund money"].Value:</strong>
+                </div>
+                <div class="px-4 text-right col-xs-6" data-bind="text: formattedTotalRefundSumInMoney()"></div>
+            </div>
+            <div class="row">
+                <div class="px-4 text-left col-xs-6">
+                    <strong>@Localizer["Total refund bonus"].Value:</strong>
+                </div>
+                <div class="px-4 text-right col-xs-6" data-bind="text: formattedTotalRefundSumInBonuses()"></div>
+            </div>
+        </div>
+    </div>
+    </div>
+    </div>
+    @await Html.PartialAsync("_posOperationTransactionsPartial", Model.OperationTransactions)
+    <div data-bind="template: { name: 'bankTransactions-template', data: BankTransactionInfos }"></div>
+    <div data-bind="template: { name: 'fiscalizationInfos-template', data: FiscalizationInfos }"></div>
+    </div>
+    </div>
+</div>
+
+@await Html.PartialAsync("_Modal", new ModalWindow
+{
+    Id = "shopping-check-modal",
+    Size = ModalWindowSize.Large
+})
+
+@section scripts{
+    <link type="text/css" rel="stylesheet" href="~/css/controllers/detailsCheck.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/css/bootstrap-select.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/js/bootstrap-select.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/js/i18n/defaults-ru_RU.min.js"></script>
+    <script src="~/js/app/utils/dateUtils.js" asp-append-version="true"></script>
+    <script src="~/js/app/utils/priceFormatter.js" asp-append-version="true"></script>
+    <script src="~/js/app/checkDetails.js" asp-append-version="true"></script>
+    @{
+        await Html.RenderPartialAsync("_ModalScriptsInit", "shopping-check-modal");
+    }
+
+    <script type="text/javascript">
+        @{
+            var serializerSettings = new JsonSerializerSettings
+            {
+                ContractResolver = new CamelCasePropertyNamesContractResolver()
+            };
+        }
+
+        var detailedCheck = @Html.Raw(JsonConvert.SerializeObject(Model.Check, serializerSettings));
+
+        var fiscalizationInfos = @Html.Raw(JsonConvert.SerializeObject(Model.FiscalizationChecks, serializerSettings));
+        var auditDateTimeInfos = @Html.Raw(JsonConvert.SerializeObject(Model.AuditDateTime, serializerSettings));
+        var posOperationTransacitons = @Html.Raw(JsonConvert.SerializeObject(Model.OperationTransactions, serializerSettings));
+        var bankTransactionInfos = @Html.Raw(JsonConvert.SerializeObject(Model.Transactions, serializerSettings));
+
+        var detailedCheckViewModel = new DetailedCheckViewModel(detailedCheck, fiscalizationInfos, auditDateTimeInfos, posOperationTransacitons, bankTransactionInfos);
+
+        ko.applyBindings(detailedCheckViewModel, document.getElementById("#detailed-check"));
+
+        (function($, document, serviceProxy) {
+            $(function() {
+                var showMask = function () {
+                    setTimeout(function () {
+                            $("#shopping-check-modal").modal('hide');
+                            $('#check-items-info-and-spinner').addClass('sk-loading');
+                        },
+                        300);
+                };
+
+                var hideMask = function() {
+                    setTimeout(function() {
+                            $('#check-items-info-and-spinner').removeClass('sk-loading');
+                        },
+                        300);
+                };
+
+                var operationsCompleted = 0;
+                var handleEditRequestSucceeded = function() {
+                    operationsCompleted += 1;
+
+                    if (operationsCompleted === 2) {
+                        window.location.reload();
+                    }
+                };
+
+                var handleRequestFailure = function (result) {
+                    bootstrapError(result);
+                    hideMask();
+                };
+
+                var handleAddRequestSucceeded = function() {
+                    window.location.reload();
+                }
+
+                $(document).on('click',
+                    '#btn-submit-add',
+                    function() {
+                        var labeledGoodId = $('#labeledGoodsSelectList').val();
+                        if (labeledGoodId == undefined || labeledGoodId == null)
+                            return;
+
+                        var data = { LabelGoodId: labeledGoodId };
+                        serviceProxy.postJsonResultCustomMask(
+                            showMask,
+                            hideMask,
+                            "@Url.Action("PerformCheckItemAddition", "Checks", new { checkId = Model.Check.Id })",
+                            data,
+                            handleAddRequestSucceeded,
+                            handleRequestFailure);
+                    });
+
+                $(document).on('click',
+                    '#btn-submit-confirm',
+                    function() {
+                        operationsCompleted = 0;
+
+                        var checkItemsIdsToDelete = {
+                            checkItemsIds: detailedCheckViewModel.checkItemIdsToDelete()
+                        };
+
+                        var checkItemsIdsToConfirm = {
+                            checkItemsIds: detailedCheckViewModel.checkItemIdsToConfirm()
+                        };
+
+                        var confirmCheckItems = function() {
+                            handleEditRequestSucceeded();
+                            serviceProxy.postJsonResultCustomMask(
+                                showMask,
+                                hideMask,
+                                "@Url.Action("PerformCheckItemsConfirmation", "Checks", new { checkId = Model.Check.Id })",
+                                checkItemsIdsToConfirm,
+                                handleEditRequestSucceeded,
+                                handleRequestFailure);
+                        };
+
+                        if (checkItemsIdsToDelete.checkItemsIds.length !== 0 &&
+                            checkItemsIdsToConfirm.checkItemsIds.length !== 0) {
+                            serviceProxy.postJsonResultCustomMask(
+                                showMask,
+                                hideMask,
+                                "@Url.Action("PerformCheckItemsDeletion", "Checks", new { checkId = Model.Check.Id })",
+                                checkItemsIdsToDelete,
+                                confirmCheckItems,
+                                handleRequestFailure);
+
+                        } else {
+                            if (checkItemsIdsToDelete.checkItemsIds.length !== 0) {
+                                serviceProxy.postJsonResultCustomMask(
+                                    showMask,
+                                    hideMask,
+                                    "@Url.Action("PerformCheckItemsDeletion", "Checks", new { checkId = Model.Check.Id })",
+                                    checkItemsIdsToDelete,
+                                    handleEditRequestSucceeded,
+                                    handleRequestFailure);
+
+                            } else {
+                                handleEditRequestSucceeded();
+                            }
+
+                            if (checkItemsIdsToConfirm.checkItemsIds.length !== 0) {
+                                serviceProxy.postJsonResultCustomMask(
+                                    showMask,
+                                    hideMask,
+                                    "@Url.Action("PerformCheckItemsConfirmation", "Checks", new { checkId = Model.Check.Id })",
+                                    checkItemsIdsToConfirm,
+                                    handleEditRequestSucceeded,
+                                    handleRequestFailure);
+                            } else {
+                                handleEditRequestSucceeded();
+                            }
+                        }
+                    });
+            });
+        }(window.jQuery, document, new ServiceProxy()));
+    </script>
+}

@@ -1,0 +1,119 @@
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@using NasladdinPlace.Core.Enums
+@using NasladdinPlace.UI.Helpers
+@using NasladdinPlace.UI.Managers.Reference.Enums
+@using NasladdinPlace.UI.ViewModels.Logs
+@inject IViewLocalizer Localizer
+
+@{
+    var requestButton = Localizer["Request"].Value;
+    var cancel = Localizer["Cancel"].Value;
+
+    var formRenderer = new FormRendererHelper<PosLogViewModel>();
+    var posTypeControl = formRenderer.Get(f => f.LogType);
+    var posControl = formRenderer.Get(f => f.PosId);
+}
+
+<div class="modal" id="request-log-modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content animated fadeIn">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4>@Localizer["RequestTitle"].Value</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group row">
+                    <label class="col-lg-12">@Html.RenderDisplay(posControl)</label>
+                    <div class="col-lg-12">
+                        <div class="input-group">
+                            <input class="form-control input-sm" data-bind="value:PosName" maxlength="50" title="">
+                            <span class="input-group-btn">
+                                <button type="button" class="btn btn-sm btn-default narrow" data-bind="click: $root.selectPos">...</button>
+                                <button type="button" class="btn btn-sm btn-default narrow " data-bind="click: $root.clearPos"><em class="fa fa-times"></em></button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-lg-12">@Html.RenderDisplay(posTypeControl)</label>
+                    <div class="col-lg-12">@(await Html.RenderControlAsync(posTypeControl))</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-white" data-dismiss="modal">@cancel</button>
+                <button type="button" class="btn btn-primary" data-bind="click: performRequestLog, enable: $root.LogType() != @((int)PosLogType.Daily)">@requestButton</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    window.getGridCustomHandler = function () {
+        return new GridCustomHandler(
+            vm => {
+                const modalId = "#request-log-modal";
+                vm.LogType = ko.observable();
+                vm.PosId = ko.observable();
+                vm.PosName = ko.observable();
+
+                vm.selectPos = function() {
+                    var callback = function(data) {
+                        vm.PosId(data[2]);
+                        vm.PosName(data[0]);
+                    };
+
+                    showTextReference('@TextReferenceSources.PointOfSales', 'Витрины', 'simplePage', false, callback,  null, '');;
+                }
+
+                vm.clearPos = function() {
+                    vm.PosId(null);
+                    vm.PosName(null);
+                }
+
+                vm.requestLogs = function() {
+                    $(modalId).modal();
+                }
+
+                vm.performRequestLog = function() {
+                    const url = '/api/logs';
+                    const data = {
+                        LogType: vm.LogType(),
+                        PosId: vm.PosId()
+                    };
+
+                    vm.serviceProxy.postJsonResult(url, data, function (result) {
+                        if (result.error) {
+                            bootstrapError(result.error);
+                        } else {
+                            bootstrapSuccess('@Html.Raw(Localizer["Requesting logs"].Value)', '@Html.Raw(Localizer["Pos logs successfully requested"].Value)');
+                            $(modalId).modal('hide');
+                            vm.refresh();
+                        }
+                    });
+                }
+
+                vm.download = function(item) {
+                    const url = '/api/logs/' + item.PosLogId();
+                    window.open(url, '_blank');
+                }
+
+                vm.remove = function(item) {
+                    bootstrapConfirmDelete(
+                        '@Html.Raw(Localizer["Attention"].Value)',
+                        '@Html.Raw(Localizer["Confirming delete message"].Value)',
+                        function () {
+                            const url = '/api/logs/' + item.PosLogId();
+
+                            vm.serviceProxy.deleteJsonResult(url, {}, function (result) {
+                                if (result.error) {
+                                    bootstrapError(result.error);
+                                } else {
+                                    bootstrapSuccess('@Html.Raw(Localizer["Removing"].Value)', '@Html.Raw(Localizer["Log file successfully removed"].Value)');
+                                    vm.refresh();
+                                }
+                            });
+                        });
+                 }
+            });
+    };
+</script>

@@ -1,0 +1,42 @@
+﻿@using NasladdinPlace.UI.Helpers
+@using NasladdinPlace.UI.Managers.Reference.Enums
+@using NasladdinPlace.UI.ViewModels.Base
+@model UniReferenceViewModel<BaseViewModel>
+<link type="text/css" rel="stylesheet" href="~/css/bootstrap-datetimepicker.min.css" />
+<script src="~/js/grid.js"></script>
+<script type="text/javascript" src="~/lib/moment/min/moment.min.js"></script>
+<script type="text/javascript" src="~/lib/moment/locale/ru.js"></script>
+<script type="text/javascript" src="~/lib/eonasdan-bootstrap-datetimepicker/src/js/bootstrap-datetimepicker.js"></script>
+<script type="text/javascript">
+    koRegisterPaginationComponent();
+
+    ko.validation.init({
+        parseInputAttributes: true,
+        decorateInputElement: true,
+        insertMessages: true,
+        writeInputAttributes: true
+    });
+
+    var cfg = {
+        viewbagTitle: '@ViewBag.Title',
+        saveUrl: '@Model.SaveUrl',
+        loadUrl: '@Model.LoadUrl',
+        exportUrl : '@Model.ExportUrl',
+        url: '@Model.Url',
+        selectPropertyName: '@(Model.AllFormRendererInfos.FirstOrDefault(x => x.RenderInfo.Control == RenderControl.Select)?.RenderInfo.PropertyName ?? "")'
+    };
+
+    function ReferenceViewModel(baseViewModel) {
+        const vm = this;
+        jQuery.extend(vm, ko.mapping.fromJS(baseViewModel));
+
+        initGrid(vm, cfg);
+    }
+
+    @{
+        Model.ClearInfo();
+    }
+
+    var vmReferenceViewModel = new ReferenceViewModel(@Html.Serialize(Model));
+    ko.applyBindings(vmReferenceViewModel, document.getElementById("reference-common"));
+</script>

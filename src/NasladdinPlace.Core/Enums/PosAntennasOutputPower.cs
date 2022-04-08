@@ -1,0 +1,40 @@
+﻿namespace NasladdinPlace.Core.Enums
+{
+    public enum PosAntennasOutputPower : byte
+    {
+        Dbm0 = 0x00,
+        Dbm1 = 0x01,
+        Dbm2 = 0x02,
+        Dbm3 = 0x03,
+        Dbm4 = 0x04,
+        Dbm5 = 0x05,
+        Dbm6 = 0x06,
+        Dbm7 = 0x07,
+        Dbm8 = 0x08,
+        Dbm9 = 0x09,
+        Dbm10 = 0x0A,
+        Dbm11 = 0x0B,
+        Dbm12 = 0x0C,
+        Dbm13 = 0x0D,
+        Dbm14 = 0x0E,
+        Dbm15 = 0x0F,
+        Dbm16 = 0x10,
+        Dbm17 = 0x11,
+        Dbm18 = 0x12,
+        Dbm19 = 0x13,
+        Dbm20 = 0x14,
+        Dbm21 = 0x15,
+        Dbm22 = 0x16,
+        Dbm23 = 0x17,
+        Dbm24 = 0x18,
+        Dbm25 = 0x19,
+        Dbm26 = 0x1A,
+        Dbm27 = 0x1B,
+        Dbm28 = 0x1C,
+        Dbm29 = 0x1D,
+        Dbm30 = 0x1E,
+        Dbm31 = 0x1F,
+        Dbm32 = 0x20,
+        Dbm33 = 0x21
+    }
+}

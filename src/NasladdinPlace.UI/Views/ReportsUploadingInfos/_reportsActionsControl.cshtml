@@ -1,0 +1,8 @@
+﻿<div>
+    <a data-bind="click: $root.startUpload" class="btn-link">
+        <span><em class="fa fa-upload"></em>&nbsp;Выгрузить</span>
+    </a>
+</div>
+@{
+    await Html.RenderPartialAsync("Actions/_editRemoveActionControl");
+}
